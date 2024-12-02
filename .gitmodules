@@ -1,0 +1,6 @@
+[submodule ".obsidian"]
+	path = .obsidian
+	url = https://github.com/KomeijiReimu/.Obsidian.git
+[submodule "sync_obsidian_config"]
+	path = sync_obsidian_config
+	url = https://github.com/KomeijiReimu/sync_obsidian_config.git
