@@ -14,3 +14,4 @@ Android studio左侧文件夹目录中的结构如图
 > **mipmap**：存放位图文件，同时图片缩放提供一定优化。
 > **value**：包括了colors.xml，strings.xml，styles.xml这三个主要文件，其中colors.xml中定义的颜色资源；strings.xml中定义的字符串资源；styles.xml中定义的是样式资源。
 
+res内所有的资源文件
