@@ -168,4 +168,3 @@ public class MainActivity extends AppCompatActivity {
 package="com.example.myapp">
 ```
 
-阿萨
