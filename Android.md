@@ -162,5 +162,10 @@ public class MainActivity extends AppCompatActivity {
 
 ```
 
+解释：
+```xml
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+package="com.example.myapp">
+```
 
-
+阿萨
