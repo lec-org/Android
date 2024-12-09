@@ -72,7 +72,7 @@ Java 文字：txtName.setText(getResources().getText(R.string.name));
 
 ### 三大文件
 
-`MainActivity.java`
+#### *MainActivity.java*
 
 **作用：**
 - **主逻辑文件**：负责定义应用的主要行为和交互逻辑。
@@ -108,14 +108,14 @@ public class MainActivity extends AppCompatActivity {
 
 ```
 
-`activity_main.xml`
+#### *activity_main.xml*
 
 **作用：**
 - **定义 UI 界面**：指定 Activity 或 Fragment 的用户界面结构。
 - **声明组件**：如按钮、文本框、图片等。
 - **与 Java 逻辑文件关联**：UI 元素通过 `findViewById()` 方法与逻辑代码交互。
 
-`AndroidManifest.xml`
+#### *AndroidManifest.xml*
 
 **作用：**
 - **定义应用的元信息**：描述应用的名称、图标、版本号等基本信息。
@@ -162,8 +162,5 @@ public class MainActivity extends AppCompatActivity {
 
 ```
 
-**功能：**
-- **应用入口配置**：通过 `intent-filter` 声明主 Activity。
-- **权限控制**：如网络访问、文件读写等。
-- **声明外部依赖**：如指定应用需兼容的 Android SDK 版本。
+
 
