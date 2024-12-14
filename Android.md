@@ -207,6 +207,7 @@ android:theme="@style/AppTheme">
 ```
 **`<uses-permission>`**: 用于声明应用所需的权限。此例中声明了 `INTERNET` 权限，表示应用需要使用互联网。
 
+
 **如何为新的 Activity 添加声明**
 
 每个 Activity 都需要在 `AndroidManifest.xml` 中声明
@@ -220,4 +221,16 @@ android:theme="@style/AppTheme">
 ```
 - **`android:name=".NewActivity"`**: 声明新 Activity 的类名。若 Activity 在同一包中，可以使用相对路径（例如：`.NewActivity`）。
 - **`<intent-filter>`**: 用来声明该 Activity 响应的意图。例如，`android.intent.action.VIEW` 可能会用来表示某个页面可以展示某种类型的内容。
+
+
+---
+
+# UI布局
+
+## 布局
+
+Android中有六大布局,分别是: LinearLayout(线性布局)，RelativeLayout(相对布局)，TableLayout(表格布局) FrameLayout(帧布局)，AbsoluteLayout(绝对布局)，GridLayout(网格布局)
+
+### 线性布局
+
 
