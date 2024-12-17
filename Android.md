@@ -256,7 +256,103 @@ Android中有六大布局,分别是：
 根据上文所说
 > **layout**：存放APP的布局文件。
 
-在Android Studio中，
+在Android Studio中
+![[Pasted image 20241217204425.png|1350]]
+
+布局文件创建后，在`activity`类中加载
+```java
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+}
+```
+
+```kotlin
+fun onCreate(savedInstanceState: Bundle) {
+    super.onCreate(savedInstanceState)
+    setContentView(R.layout.activity_main)
+}
+```
 ### 线性布局
 
+线性布局是常用一种布局，按垂直（vertical）或者水平（horizontal）方向来布局控件
+![[Pasted image 20241217205314.png]]
 
+1. **orientation**：
+    - 控制子组件的排列方式，有两种选择：
+        - `horizontal`：水平排列（从左到右）。
+        - `vertical`：垂直排列（从上到下，默认）。
+2. **gravity**：
+    - 控制 **LinearLayout 内的子元素** 如何对齐，可以设置多个组合，如 `left`（左对齐）、`right`（右对齐）、`center`（居中）等。
+3. **layout_gravity**：
+    - 控制 **该组件在父容器中的对齐方式**。
+    - 常见的属性值有 `top`、`bottom`、`center` 等。
+4. **layout_width 和 layout_height**：
+    - 控制组件的宽度和高度：
+        - `wrap_content`：根据内容大小来调整。
+        - `match_parent` 或 `fill_parent`：填充满父容器。
+5. **id**：
+    - 为组件设置唯一资源 ID，便于在 Java 文件中通过 `findViewById(id)` 获取组件引用。
+6. **background**：
+    - 设置组件的背景，可以使用纯色、图片等。
+
+
+`Weight` 属性用于按比例分配控件的空间。
+- **简单用法**：
+    - 通过设置 `layout_weight` 属性，可以让组件按照比例占据父容器的空间。
+    - 比如两个组件设置 `weight=1`，会均分剩余空间；如果一个组件设置 `weight=2`，另一个为 `weight=1`，空间分配比例为 2:1。
+- **应用场景**：
+    - 常用于实现多组件按比例分配空间，灵活控制 UI 布局。
+
+
+`divider` 属性用于在 LinearLayout 中设置分割线，可以控制分割线的样式和位置。
+1. **divider**：
+    - 设置分割线的具体图片。
+2. **showDividers**：
+    - 设置分割线显示的位置，常见的值有：
+        - `none`：不显示分割线。
+        - `middle`：仅在组件之间显示分割线。
+        - `beginning`：第一个组件之前显示分割线。
+        - `end`：最后一个组件之后显示分割线。
+3. **dividerPadding**：
+    - 控制分割线的 padding（内边距）。
+
+*示例*
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--@+id/ 表示定义一个新 ID。-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+    <!--在垂直方向的 LinearLayout 中，layout_height="0dp" 的意思是 不占用固定高度。-->
+    <!--高度将完全由 layout_weight 来决定，而不是由内容或 layout_height 的值决定。-->
+    <Button
+            android:id="@+id/button1"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:text="Button1"
+            android:layout_weight="3" />
+
+    <Button
+            android:id="@+id/button2"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:text="Button2"
+            android:layout_gravity="right"
+            android:layout_weight="1" />
+
+    <Button
+            android:id="@+id/button3"
+            android:layout_width="100dp"
+            android:layout_height="0dp"
+            android:text="Button3"
+            android:layout_weight="2" />
+</LinearLayout>
+
+```
+
+效果：
+![[Pasted image 20241217211233.png]]
