@@ -227,10 +227,36 @@ android:theme="@style/AppTheme">
 
 # UI布局
 
+Android 的 UI 界面都是由 `View` 和 `ViewGroup` 及其派生类组合而成的。其中，`View` 是所有 UI 组件的基类，而 `ViewGroup` 是容纳 `View` 及其派生类的容器，`ViewGroup` 也是从 `View` 派生出来的
+
+`View`通常会绘制用户可见的内容，互动`ViewGroup` 是一个不可见的容器，用于定义 `View` 和其他 `ViewGroup` 的布局结构对象
+![[Pasted image 20241217203634.png|725]]
+
 ## 布局
 
-Android中有六大布局,分别是: LinearLayout(线性布局)，RelativeLayout(相对布局)，TableLayout(表格布局) FrameLayout(帧布局)，AbsoluteLayout(绝对布局)，GridLayout(网格布局)
+布局就是界面的框架，类似一个可以放很多控件的容器
+- 如下图为布局和控件的关系，布局里可嵌套布局和控件，但控件里不可放布局
 
+![[Pasted image 20241217203800.png|556]]
+
+Android中有六大布局,分别是：
+>线性布局*LinearLayout*
+>相对布局*RelativeLayout*
+>表格布局*TableLayout*
+>帧布局*FrameLayout*
+>绝对布局*AbsoluteLayout*
+>网格布局*GridLayout*
+
+还有一种新型布局
+>约束布局*ConstraintLayout*
+
+
+**布局的创建和加载**
+
+根据上文所说
+> **layout**：存放APP的布局文件。
+
+在Android Studio中，
 ### 线性布局
 
 
