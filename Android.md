@@ -322,6 +322,7 @@ fun onCreate(savedInstanceState: Bundle) {
 <?xml version="1.0" encoding="utf-8"?>
 
 <!--@+id/ 表示定义一个新 ID。-->
+<!--xmlns:android：定义了 android`命名空间，用于访问 Android 系统提供的属性（如 android:layout_width）-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/main"
         android:layout_width="match_parent"
@@ -355,4 +356,49 @@ fun onCreate(savedInstanceState: Bundle) {
 ```
 
 效果：
-![[Pasted image 20241217211233.png]]
+![[Pasted image 20241217212919.png]]
+
+*示例*
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+    <TextView
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="one"
+            android:background="#98FB98" />
+
+    <TextView
+            android:layout_weight="2"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="two"
+            android:background="#FFFF00" />
+
+    <TextView
+            android:layout_weight="3"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:text="three"
+            android:background="#FF00FF" />
+</LinearLayout>
+```
+
+效果:
+![[Pasted image 20241217213216.png]]
+
+**关键区别：`wrap_content` 和 `0dp` 的底层逻辑**
+1. **`layout_width="wrap_content"`**：
+    - 系统会 **先测量控件内容的宽度**。
+    - 然后，当存在 `layout_weight` 时，系统会忽略控件的内容大小，重新分配控件的宽度。
+    - **过程：** 测量内容 → 覆盖大小 → 按权重分配。
+2. **`layout_width="0dp"`**：
+    - 系统直接跳过控件内容的宽度测量。
+    - 它会立即根据 `layout_weight` 进行分配，不做无意义的内容大小计算。
+    - **过程：** 跳过测量 → 按权重分配。
