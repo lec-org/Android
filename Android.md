@@ -225,7 +225,7 @@ android:theme="@style/AppTheme">
 
 ---
 
-# UI布局
+# UI
 
 Android 的 UI 界面都是由 `View` 和 `ViewGroup` 及其派生类组合而成的。其中，`View` 是所有 UI 组件的基类，而 `ViewGroup` 是容纳 `View` 及其派生类的容器，`ViewGroup` 也是从 `View` 派生出来的
 
@@ -273,6 +273,8 @@ fun onCreate(savedInstanceState: Bundle) {
     setContentView(R.layout.activity_main)
 }
 ```
+
+*下面将介绍布局中的一些常用属性，有关控件（如`EditText`、`TextView`等）的属性，可以在使用时自行搜索*
 ### 线性布局
 
 线性布局是常用一种布局，按垂直（vertical）或者水平（horizontal）方向来布局控件
@@ -402,3 +404,13 @@ fun onCreate(savedInstanceState: Bundle) {
     - 系统直接跳过控件内容的宽度测量。
     - 它会立即根据 `layout_weight` 进行分配，不做无意义的内容大小计算。
     - **过程：** 跳过测量 → 按权重分配。
+
+
+**练习：学校实验内容**
+![[Pasted image 20241218215943.png]]
+
+手写一个这样的页面即可
+
+```xml
+
+```
