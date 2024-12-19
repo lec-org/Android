@@ -412,5 +412,113 @@ fun onCreate(savedInstanceState: Bundle) {
 手写一个这样的页面即可
 
 ```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:id="@+id/main"
+        android:layout_height="match_parent">
 
+    <EditText
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:id="@+id/ed1"
+            android:gravity="center" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/text1"
+            android:text="+"
+            android:textSize="20sp" />
+
+    <EditText
+            android:layout_width="100dp"
+            android:layout_height="48dp"
+            android:id="@+id/ed2"
+            android:gravity="center" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tx2"
+            android:text="="
+            android:textSize="20sp" />
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/tx3"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:gravity="center" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn"
+            android:text="计算"
+            android:gravity="center"
+            android:textSize="20sp" />
+</LinearLayout>
+
+```
+
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText ed1, ed2;
+    private TextView tx3;
+    private Button btn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ed1 = findViewById(R.id.ed1);
+        ed2 = findViewById(R.id.ed2);
+        tx3 = findViewById(R.id.tx3);
+        btn = findViewById(R.id.btn);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                var input1 = ed1.getText().toString();
+                var input2 = ed2.getText().toString();
+                if (input2.isEmpty() || input1.isEmpty()) {
+                    Toast.makeText(MainActivity.this, "请输入", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                try {
+                    var n1 = Double.parseDouble(input1);
+                    var n2 = Double.parseDouble(input2);
+                    var res = n1 + n2;
+
+                    tx3.setText(String.valueOf(res));
+                } catch (Exception e) {
+                    Toast.makeText(MainActivity.this, "请输入数字", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+}
 ```
