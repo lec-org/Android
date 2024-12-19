@@ -287,7 +287,8 @@ fun onCreate(savedInstanceState: Bundle) {
 }
 ```
 
-*下面将介绍布局中的一些常用属性，有关控件（如`EditText`、`TextView`等）的属性，可以在使用时自行搜索*
+*下面将介绍布局中的一些常用属性
+有关控件（如`EditText`、`TextView`等）的属性，可以在使用时自行搜索*
 ### 线性布局
 
 线性布局是常用一种布局，按垂直（vertical）或者水平（horizontal）方向来布局控件
@@ -593,4 +594,92 @@ public class MainActivity extends AppCompatActivity {
 
 当界面比较复杂的时候，即使使用了多种嵌套的线性布局，也无法实现想要的灵活效果，同时甚至还降低了UI的渲染效率
 这时需要使用`RelativeLayout`，以父容器或者兄弟组件参考+margin +padding就可以设置组件的显示位置
+
+![[Pasted image 20241219142014.png]]
+
+
+
+
+1. **相对于父控件的属性**
+
+这些属性用于让子控件与父控件的边界对齐：
+
+- **`android:layout_alignParentTop="true"`**  
+    控件的 **顶部** 与父控件的顶部对齐。
+- **`android:layout_alignParentBottom="true"`**  
+    控件的 **底部** 与父控件的底部对齐。
+- **`android:layout_alignParentLeft="true"`**  
+    控件的 **左边缘** 与父控件的左边缘对齐。
+- **`android:layout_alignParentRight="true"`**  
+    控件的 **右边缘** 与父控件的右边缘对齐。
+- **`android:layout_centerHorizontal="true"`**  
+    控件在父控件中 **水平居中**。
+- **`android:layout_centerVertical="true"`**  
+    控件在父控件中 **垂直居中**。
+- **`android:layout_centerInParent="true"`**  
+    控件在父控件中 **完全居中**（水平和垂直居中）。
+
+2. **相对于指定控件的属性**
+
+这些属性用于让子控件相对于某个已指定控件（通过 ID 设置）的位置进行布局：
+
+- **`android:layout_above="@id/控件ID"`**  
+    当前控件的 **底部** 位于指定控件的顶部。
+- **`android:layout_below="@id/控件ID"`**  
+    当前控件的 **顶部** 位于指定控件的底部。
+- **`android:layout_toLeftOf="@id/控件ID"`**  
+    当前控件的 **右边缘** 紧挨指定控件的左边缘。
+- **`android:layout_toRightOf="@id/控件ID"`**  
+    当前控件的 **左边缘** 紧挨指定控件的右边缘。
+- **`android:layout_alignTop="@id/控件ID"`**  
+    当前控件的 **顶部** 与指定控件的顶部对齐。
+- **`android:layout_alignBottom="@id/控件ID"`**  
+    当前控件的 **底部** 与指定控件的底部对齐。
+- **`android:layout_alignLeft="@id/控件ID"`**  
+    当前控件的 **左边缘** 与指定控件的左边缘对齐。
+- **`android:layout_alignRight="@id/控件ID"`**  
+    当前控件的 **右边缘** 与指定控件的右边缘对齐。
+- **`android:layout_alignBaseline="@id/控件ID"`**  
+    当前控件的 **基线** 与指定控件的基线对齐。
+
+3. **外边距（Margin）**
+
+用于设置控件与其他控件或父控件边缘之间的距离：
+- **`android:layout_margin`**  
+    设置控件 **上下左右** 的外边距。
+- **`android:layout_marginTop`**  
+    设置控件 **顶部** 的外边距。
+- **`android:layout_marginBottom`**  
+    设置控件 **底部** 的外边距。
+- **`android:layout_marginLeft`**  
+    设置控件 **左侧** 的外边距。
+- **`android:layout_marginRight`**  
+    设置控件 **右侧** 的外边距。
+
+4. **内边距（Padding）**
+
+用于设置控件内容与控件边框之间的距离：
+
+- **`android:padding`**  
+    设置控件 **上下左右** 的内边距。
+- **`android:paddingTop`**  
+    设置控件 **顶部** 的内边距。
+- **`android:paddingBottom`**  
+    设置控件 **底部** 的内边距。
+- **`android:paddingLeft`**  
+    设置控件 **左侧** 的内边距。
+- **`android:paddingRight`**  
+    设置控件 **右侧** 的内边距。
+
+
+父容器属性定位图：
+![[Pasted image 20241219142357.png]]
+
+兄弟组件定位图：
+![[Pasted image 20241219142440.png]]
+
+其中，组件1与组件2互为兄弟，与组件3无关
+
+> NOTE：
+> `margin`针对的是容器中的组件，而`padding`针对的是组件中的元素
 
