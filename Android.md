@@ -731,3 +731,76 @@ public class MainActivity extends AppCompatActivity {
 手搓一个这样的页面
 ![[Pasted image 20241219150754.png]]
 
+```xml
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main">
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="中间"
+            android:id="@+id/middle"
+            android:layout_centerInParent="true" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_above="@id/middle"
+            android:text="上" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/middle"
+            android:layout_above="@id/middle"
+            android:text="左上" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="左"
+            android:layout_alignBaseline="@id/middle"
+            android:layout_toLeftOf="@id/middle" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="左下"
+            android:layout_below="@id/middle"
+            android:layout_toLeftOf="@id/middle" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下"
+            android:layout_centerInParent="true"
+            android:layout_below="@id/middle" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="右下"
+            android:layout_below="@id/middle"
+            android:layout_toRightOf="@id/middle" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="右"
+            android:layout_toRightOf="@id/middle"
+            android:layout_alignBaseline="@id/middle" />
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="右上"
+            android:layout_toRightOf="@id/middle"
+            android:layout_above="@id/middle" />
+
+
+</RelativeLayout>
+```
+
