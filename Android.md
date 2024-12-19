@@ -597,9 +597,6 @@ public class MainActivity extends AppCompatActivity {
 
 ![[Pasted image 20241219142014.png]]
 
-
-
-
 1. **相对于父控件的属性**
 
 这些属性用于让子控件与父控件的边界对齐：
@@ -682,4 +679,55 @@ public class MainActivity extends AppCompatActivity {
 
 > NOTE：
 > `margin`针对的是容器中的组件，而`padding`针对的是组件中的元素
+
+```xml
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/main">
+    
+    <!--两个按钮，一个是paddingLeft，一个是layout_marginLeft-->
+    <Button
+            android:id="@+id/btn1"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Button" />
+
+    <Button
+            android:paddingLeft="100dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Button"
+            android:layout_toRightOf="@id/btn1" />
+
+    <Button
+            android:id="@+id/btn2"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Button"
+            android:layout_alignParentBottom="true" />
+
+    <Button
+            android:layout_marginLeft="100dp"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:text="Button"
+            android:layout_toRightOf="@id/btn2"
+            android:layout_alignParentBottom="true" />
+
+</RelativeLayout>
+```
+![[Pasted image 20241219145745.png]]
+
+
+> `margin`可以使用负数
+
+相对布局中，在Android Studio中可以拖动或者通过箭头来快捷设置相对属性和位置
+![[Pasted image 20241219150511.png|386]]
+
+
+**练习：学校实验内容**
+
+手搓一个这样的页面
+![[Pasted image 20241219150754.png]]
 
