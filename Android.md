@@ -925,7 +925,7 @@ public class MainActivity extends AppCompatActivity {
 ```
 
 不用像相对布局那样写一堆相对谁谁谁的属性，直接按照网格结构往里填即可
-
+**注意，网格的边线是对齐的，边线在哪里有时候可能取决于某个特定的控件**
 
 **练习：学校实验内容**
 
@@ -933,5 +933,52 @@ public class MainActivity extends AppCompatActivity {
 ![[Pasted image 20241219164516.png]]
 
 ```xml
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:columnCount="4"
+        android:id="@+id/main">
 
+    <TextView
+            android:text="Login From"
+            android:layout_gravity="center_horizontal"
+            android:layout_columnSpan="4"
+            android:layout_rowSpan="2"
+            android:textSize="40sp"
+            android:layout_marginTop="10sp"
+            android:textStyle="bold" />
+
+    <TextView
+            android:textSize="20sp"
+            android:text="User Name:" />
+
+    <EditText
+            android:layout_columnSpan="2"
+            android:ems="14"
+            android:layout_gravity="fill" />
+
+    <TextView
+            android:layout_row="3"
+            android:layout_column="0"
+            android:layout_gravity="left"
+            android:text="Password:"
+            android:textSize="20sp" />
+
+    <EditText
+            android:layout_columnSpan="2"
+            android:ems="14"
+            android:layout_gravity="fill" />
+
+    <Button
+            android:layout_row="4"
+            android:text="Login"
+            android:layout_column="2" />
+
+
+</GridLayout>
 ```
+
+![[Pasted image 20241219172356.png|325]]
+
+### 约束布局
+
