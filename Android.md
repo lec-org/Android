@@ -257,7 +257,20 @@ Android中有六大布局,分别是：
 > **layout**：存放APP的布局文件。
 
 在Android Studio中
-![[Pasted image 20241217204425.png|1350]]
+![[Pasted image 20241219135529.png|1350]]
+
+在这里，不论什么布局，你都可以像`Visual Basic`一样进行可视化编辑，包括调整控件位置和大小等
+
+**外观相关：**
+![[Pasted image 20241219135607.png|975]]
+
+1. **Design 和 Blueprint**：选择我们希望如何在编辑器中查看布局。选择 **Design** 可查看布局的渲染后预览效果。选择 **Blueprint** 可仅查看每个视图的轮廓。选择 **Design + Blueprint** 可并排查看这两个视图； 
+2. **屏幕方向和布局变体**：选择屏幕方向（横向和纵向），或选择应用提供备用布局的其他屏幕模式（例如夜间模式）。该菜单还包含用于创建新布局变体的命令；
+3. **设备类型和尺寸**：选择设备类型（手机/平板电脑、Android TV 或 Wear OS）和屏幕配置（尺寸和密度）。我们可以从多种预配置的设备类型和 AVD 定义中选择，也可以从列表中选择 **Add Device Definition** 创建新的 AVD；
+4. **API 版本**：选择预览布局时使用的 Android 版本；
+5. **AppTheme**：选择要应用于预览的界面主题背景。请注意，这仅适用于支持的布局样式，因此该列表中的许多主题背景都会导致出错；
+6. **Language**：选择要以何种语言显示界面字符串。此列表仅会显示我们的字符串资源支持的语言。如果想要修改翻译，点击点击下拉菜单中的 **Edit Translations**。
+
 
 布局文件创建后，在`activity`类中加载
 ```java
@@ -406,6 +419,57 @@ fun onCreate(savedInstanceState: Bundle) {
     - **过程：** 跳过测量 → 按权重分配。
 
 
+**分割线`divider`**
+略过
+
+布局之间可以嵌套，具体表现为，总父布局设置为垂直结构，之后可以再嵌套一个水平结构的布局，如下图
+![[Pasted image 20241219141049.png]]
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:id="@+id/main"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="请输入保存电话" />
+
+    <EditText
+            android:id="@+id/phone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="right">
+
+        <Button
+                android:id="@+id/save"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="保存" />
+
+        <Button
+                android:id="@+id/cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="取消" />
+    </LinearLayout>
+</LinearLayout>
+
+```
+
+> NOTE：
+> 线性布局是线性的，也就是所有界面都是按顺序以此放置的，无法做到东一耙子，西一扫帚
+> 要想让控件灵活起来，还需要使用其他布局
+
+
+
 **练习：学校实验内容**
 ![[Pasted image 20241218215943.png]]
 
@@ -463,6 +527,7 @@ fun onCreate(savedInstanceState: Bundle) {
 
 ```
 
+*逻辑代码之后会讲解*
 ```java
 package com.learn;
 
@@ -522,3 +587,10 @@ public class MainActivity extends AppCompatActivity {
     }
 }
 ```
+
+
+### 相对布局
+
+当界面比较复杂的时候，即使使用了多种嵌套的线性布局，也无法实现想要的灵活效果，同时甚至还降低了UI的渲染效率
+这时需要使用`RelativeLayout`，以父容器或者兄弟组件参考+margin +padding就可以设置组件的显示位置
+
