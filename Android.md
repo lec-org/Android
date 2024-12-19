@@ -668,6 +668,8 @@ public class MainActivity extends AppCompatActivity {
 - **`android:paddingRight`**  
     设置控件 **右侧** 的内边距。
 
+>`padding`与`margin`在其他布局中也可以使用
+
 
 父容器属性定位图：
 ![[Pasted image 20241219142357.png]]
