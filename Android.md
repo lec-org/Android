@@ -717,10 +717,11 @@ public class MainActivity extends AppCompatActivity {
 
 </RelativeLayout>
 ```
+
 ![[Pasted image 20241219145745.png]]
 
-
 > `margin`可以使用负数
+
 
 相对布局中，在Android Studio中可以拖动或者通过箭头来快捷设置相对属性和位置
 ![[Pasted image 20241219150511.png|386]]
@@ -811,3 +812,124 @@ public class MainActivity extends AppCompatActivity {
 网格布局与表格布局相似，但是这里只介绍网格布局，表格布局不做介绍。
 
 网格布局是Android 4.0 以后引入的一个新的布局
+- 可以自己设置布局中组件的排列方式
+- 可以自定义网格布局有多少行,多少列
+- 可以直接设置组件位于某行某列
+- 可以设置组件横跨几行或者几列
+
+为了解决相对布局要写一大堆相对属性，把整个页面看做网格，做到一个控件一个坑
+
+![[Pasted image 20241219162102.png]]
+
+**1. 设置排列方向**
+
+- **`android:orientation`**
+    - 定义网格排列方向：
+        - **`horizontal`**（水平排列）。
+        - **`vertical`**（垂直排列，默认值）。
+
+**2. 设置对齐方式**
+- **`android:layout_gravity`**
+    - 控件对齐方式：
+        - 可设置为 **`center`**、**`left`**、**`right`**、**`top`**、**`bottom`** 等。
+        - 组合使用时，如：`bottom|left`，可以实现多方向对齐。
+
+**3. 设置行数和列数**
+
+- **`android:rowCount`**
+    - 指定网格的 **总行数**，例如：`android:rowCount="4"` 表示布局有 4 行。
+- **`android:columnCount`**
+    - 指定网格的 **总列数**，例如：`android:columnCount="4"` 表示布局有 4 列。
+> 如果这两个有一个没写，则会根据根据所有子控件的 `android:layout_row` 和 `android:layout_rowSpan` 的值，自动计算所需的总行(列)数
+
+ **4. 设置子控件所在行或列**
+
+- **`android:layout_row`**
+    - 子控件所在的行，从 **0** 开始计数。例如：`android:layout_row="1"` 表示子控件在第 2 行。
+- **`android:layout_column`**
+    - 子控件所在的列，从 **0** 开始计数。例如：`android:layout_column="2"` 表示子控件在第 3 列。
+
+**5. 设置子控件跨行或跨列**
+
+- **`android:layout_rowSpan`**
+    - 子控件 **跨越的行数**，例如：`android:layout_rowSpan="2"` 表示控件跨 2 行。
+- **`android:layout_columnSpan`**
+    - 子控件 **跨越的列数**，例如：`android:layout_columnSpan="3"` 表示控件跨 3 列。
+
+**6. 其他常用属性**
+
+- **`android:useDefaultMargins`**
+    - 是否使用默认的边距，默认值为 **`true`**。
+- **`android:alignmentMode`**
+    - 设置对齐模式：
+        - **`alignMargins`**（默认）：根据控件的外边距对齐。
+
+
+*示例*
+![[Pasted image 20241219164131.png|350]]
+
+```xml
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:columnCount="4"
+        android:layout_gravity="center"
+        android:id="@+id/main">
+
+    <Button
+            android:layout_column="3"
+            android:text="/" />
+
+    <Button android:text="1" />
+
+    <Button android:text="2" />
+
+    <Button android:text="3" />
+
+    <Button android:text="*" />
+
+    <Button android:text="4" />
+
+    <Button android:text="5" />
+
+    <Button android:text="6" />
+
+    <Button android:text="-" />
+
+    <Button android:text="7" />
+
+    <Button android:text="8" />
+
+    <Button android:text="9" />
+
+    <Button
+            android:text="+"
+            android:layout_gravity="fill"
+            android:layout_rowSpan="3" />
+
+    <Button
+            android:text="0"
+            android:layout_gravity="fill"
+            android:layout_columnSpan="2" />
+
+    <Button android:text="00" />
+
+    <Button
+            android:text="="
+            android:layout_gravity="fill"
+            android:layout_columnSpan="3" />
+
+</GridLayout>
+```
+
+不用像相对布局那样写一堆相对谁谁谁的属性，直接按照网格结构往里填即可
+
+
+**练习：学校实验内容**
+
+手搓一个这样的页面
+![[Pasted image 20241219164516.png]]
+
+```xml
+
+```
