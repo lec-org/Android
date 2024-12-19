@@ -804,3 +804,10 @@ public class MainActivity extends AppCompatActivity {
 </RelativeLayout>
 ```
 
+
+
+### 网格布局
+
+网格布局与表格布局相似，但是这里只介绍网格布局，表格布局不做介绍。
+
+网格布局是Android 4.0 以后引入的一个新的布局
