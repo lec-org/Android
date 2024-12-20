@@ -819,7 +819,7 @@ public class MainActivity extends AppCompatActivity {
 - 可以直接设置组件位于某行某列
 - 可以设置组件横跨几行或者几列
 
-为了解决相对布局要写一大堆相对属性，把整个页面看做网格，做到一个控件一个坑
+**为了解决相对布局要写一大堆相对属性的难题，把整个页面看做网格，做到一个控件一个坑**
 
 ![[Pasted image 20241219162102.png]]
 
@@ -981,8 +981,29 @@ public class MainActivity extends AppCompatActivity {
 ![[Pasted image 20241219172356.png|325]]
 
 
+### 绝对布局
+
+绝对布局也叫坐标布局
+子视图通过属性`android:layout_x`和`android:layout_y` 来确定当前视图在屏幕上的位置，x,y就是坐标点 x轴的值和y轴的值
+过于绝对，无法做到千人千面，不建议使用
+
 ### 约束布局
 
 `ConstraintLayout`是`Android官方`在2016年Google的I/O大会推出的一种可以灵活控制子控件的位置和大小的新布局方式，也是目前Android的几大布局中功能最强大的布局。在最新版的`Android Studio中`，创建布局文件的默认根元素都是`ConstraintLayout`了。`ConstraintLayout`非常适合使用**可视化**的方式来编写界面，但并不太适合使用XML的方式来进行编写
 
 https://guolin.blog.csdn.net/article/details/53122387
+https://blog.csdn.net/huweiliyi/article/details/122894823
+
+
+### 帧布局
+
+这个布局直接在屏幕上开辟出一块空白的区域,当我们往里面添加控件的时候,会默认把他们放到这块区域的左上角,而这种布局方式却没有任何的定位方式,所以它应用的场景并不多
+帧布局的大小由控件中最大的子控件决定
+
+略
+
+
+## 布局检查器
+
+https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
+
