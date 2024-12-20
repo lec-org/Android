@@ -1192,6 +1192,109 @@ public class MainActivity extends AppCompatActivity {
 
 ```
 
+在layout文件夹里面新建一个自定义的适配器模板
+
+`list_item_layout`
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+    <ImageView
+            android:id="@+id/image"
+            android:layout_width="0dp"
+            android:layout_height="100dp"
+            android:layout_weight="1" />
+
+    <TextView
+            android:id="@+id/tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="3" />
+
+</LinearLayout>
+
+```
+
+记得在drawable中创建这三个图片![[banana.jpg|182]]![[apple.png|100]]![[machine.jpg|190]]
+
+`MainActivity.java`
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ListView mListView;
+    private SimpleAdapter msimpleAdapter;
+    private List<Map<String, Object>> mList;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 初始化ListView
+        mListView = findViewById(R.id.lv);
+        // 初始化并填充列表数据
+        mList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            Map<String, Object> map1 = new HashMap<>();
+            map1.put("image", R.drawable.apple);
+            map1.put("text", "苹果");
+            mList.add(map1);
+            Map<String, Object> map2 = new HashMap<>();
+            map2.put("image", R.drawable.banana);
+            map2.put("text", "香蕉");
+            mList.add(map2);
+            Map<String, Object> map3 = new HashMap<>();
+            map3.put("image", R.drawable.machine);
+            map3.put("text", "玩机器");
+            mList.add(map3);
+        }
+
+        // 使用SimpleAdapter绑定数据到ListView
+        msimpleAdapter = new SimpleAdapter(this, mList, R.layout.list_item_layout,
+                new String[]{"image", "text"}, new int[]{R.id.image, R.id.tv});
+        mListView.setAdapter(msimpleAdapter);
+    }
+}
+```
+
+效果：
+![[Pasted image 20241220215514.png|200]]
+
+
+**说明：**
+- `msimpleAdapter = new SimpleAdapter(this, mList, R.layout.list_item_layout,`
+    
+    `new String[]{"image", "text"}, new int[]{R.id.image, R.id.tv});`
+    
+    1. 创建了一个SimpleAdapter对象，用于将数据绑定到ListView上。
+    2. `this`：上下文对象，表示当前的Activity或Fragment。
+    3. `mList`：数据源，通常是一个List集合，包含了要展示的数据。
+    4. `R.layout.list_item_layout`：不同于刚才安卓自带的，这里我们使用自己创建的布局，下面的两个参数`String[]`是刚才map数组中的键，`int[]`是自定义布局中对应的视图id
+    5. `new String[]{"image", "text"}`：数据源中要展示的字段名数组，这里表示要展示名为"image"和"text"的字段。
+    6. `new int[]{R.id.image, R.id.tv}`：对应字段在布局文件中的控件ID数组，这里表示字段"image"对应ID为R.id.image的ImageView控件，字段"text"对应ID为R.id.tv的TextView控件
+
+
+#### BaseAdpter
+
+最基础的适配器类，可以做任何事情
+
 
 ### ListView
 
