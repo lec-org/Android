@@ -1031,15 +1031,15 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 适配器是 UI 组件和数据之间的桥梁，**它帮助我们将数据填充到 UI 组件当中**
 ![[Pasted image 20241220144145.png]]
 
+1. **ArrayAdapter**：适用于简单的数据源，如数组或列表。它将每个数据项转换为一个 `TextView` 或其他简单视图。
+2. **SimpleAdapter**：用于将复杂的数据源（如 `List<Map<String, Object>>`）绑定到多个视图。
+3. **Custom Adapter**：通过继承 `BaseAdapter` 或其他适配器类，可以创建自定义适配器以实现复杂的需求。
+### LIstView
 
-- **BaseAdapter**：抽象类，实际开发中我们会继承这个类并且重写相关方法，用得最多的一个Adapter！
-- **ArrayAdapter**：支持泛型操作，最简单的一个Adapter，只能展现一行文字~
-- **SimpleAdapter**：同样具有良好扩展性的一个Adapter，可以自定义多种效果！
-### 基础引入
+> `ListView` 是 Android 中的一种视图组件，用于显示可滚动的垂直列表。每个列表项都是一个视图对象，ListView 会通过适配器（Adapter）将数据绑定到这些视图对象上。它通常用于显示一组相似的数据，比如联系人列表、消息列表等。
 
-代码中使用了`ListView`控件，在之后会介绍
 
-**ArrayAdapter使用示例**
+#### ArrayAdapter
 ![[Pasted image 20241220150501.png|300]]
 
 随便创建一个布局
@@ -1090,12 +1090,15 @@ public class MainActivity extends AppCompatActivity {
         // 创建ArrayAdapter
         ArrayAdapter<String> adapter = new ArrayAdapter<String>
                 (this, android.R.layout.simple_expandable_list_item_1, strs);
+        // this：表示当前的上下文对象，即这个ArrayAdapter将被用于当前的Activity或Fragment中。
         // 获取ListView对象，通过调用setAdapter方法为ListView设置Adapter设置适配器
         ListView list_test = findViewById(R.id.list_test);
         list_test.setAdapter(adapter);
     }
 }
 ```
+
+
 
 说明：
 1. 除了通过数组外，我们还可以写到一个数组资源文件中，比如：在res\valuse下创建一个数组资源的xml文件：**arrays.xml**：
@@ -1165,4 +1168,33 @@ public class MainActivity extends AppCompatActivity {
 
 3. 实例化ArrayAdapter的第二个参数：`android.R.layout.simple_expandable_list_item_1`其实这些是系统给我们提供好的一些ListView模板，其他的比如：
 > `simple_list_item_1` : 单独一行的文本框
+
+#### SimpleAdapter
+
+> SimpleAdapter是Android中用于将数据模型转换成ListView或其他视图组件的适配器。它简化了数据绑定过程，通过映射数据集中的字段到布局文件中的视图
+
+随便建一个页面布局
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/lv"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</LinearLayout>
+
+```
+
+
+### ListView
+
+
+
 
