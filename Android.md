@@ -1019,4 +1019,8 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >Checkbox(复选框)
 >Switch(开关)
 >ToggleButton(开关按钮)
+>ProgressBar(进度条)
+>SeekBar(拖动条)
+>RatingBar(星级评分条)
+>ScrollView(滚动条)
 
