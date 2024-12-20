@@ -980,5 +980,9 @@ public class MainActivity extends AppCompatActivity {
 
 ![[Pasted image 20241219172356.png|325]]
 
+
 ### 约束布局
 
+`ConstraintLayout`是`Android官方`在2016年Google的I/O大会推出的一种可以灵活控制子控件的位置和大小的新布局方式，也是目前Android的几大布局中功能最强大的布局。在最新版的`Android Studio中`，创建布局文件的默认根元素都是`ConstraintLayout`了。`ConstraintLayout`非常适合使用**可视化**的方式来编写界面，但并不太适合使用XML的方式来进行编写
+
+https://guolin.blog.csdn.net/article/details/53122387
