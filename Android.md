@@ -1,6 +1,6 @@
 # 前置了解
 
-使用`Android studio`开发
+使用`Android Studio`开发
 
 ## 项目结构
 ![[Pasted image 20241202203459.png]]
@@ -1006,4 +1006,17 @@ https://blog.csdn.net/huweiliyi/article/details/122894823
 ## 布局检查器
 
 https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
+
+## 控件
+
+常用控件：
+>TextView(文本框)
+>EditText(输入框)
+>Button(按钮)
+>ImageButton(图像按钮)
+>ImageView(图像视图)
+>RadioButton(单选按钮)
+>Checkbox(复选框)
+>Switch(开关)
+>ToggleButton(开关按钮)
 
