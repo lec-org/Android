@@ -1031,3 +1031,91 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 适配器是 UI 组件和数据之间的桥梁，**它帮助我们将数据填充到 UI 组件当中**
 ![[Pasted image 20241220144145.png]]
 
+
+### 基础引入
+
+代码中使用了`ListView`控件，在之后会介绍
+
+**ArrayAdapter使用示例**
+![[Pasted image 20241220150501.png|300]]
+
+随便创建一个布局
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:id="@+id/main"
+        android:layout_height="match_parent">
+
+
+    <ListView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/list_test" />
+</LinearLayout>
+
+```
+
+实现代码：
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.os.VibrationAttributes;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.activity.EdgeToEdge;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        // 要显示的数据
+        String[] strs = {"基神", "B神", "翔神", "曹神", "J神"};
+        // 创建ArrayAdapter
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                (this, android.R.layout.simple_expandable_list_item_1, strs);
+        // 获取ListView对象，通过调用setAdapter方法为ListView设置Adapter设置适配器
+        ListView list_test = findViewById(R.id.list_test);
+        list_test.setAdapter(adapter);
+    }
+}
+```
+
+说明：
+1. 除了通过数组外，我们还可以写到一个数组资源文件中，比如：在res\valuse下创建一个数组资源的xml文件：**arrays.xml**：
+```xml
+<?xml version="1.0" encoding="utf-8"?>  
+<resources>  
+    <string-array name="myarray">  
+    <item>语文</item>  
+    <item>数学</item>  
+    <item>英语</item>  
+    </string-array>      
+</resources>
+```
+之后在布局下加入：
+```xml
+<ListView
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:entries="@array/myarray"
+android:id="@+id/list_test" />
+```
+
+mainactivity使用默认，即可达到下面的效果
+![[Pasted image 20241220152501.png|350]]
+
+当然也可以布局保持不变，mainactivity改成
