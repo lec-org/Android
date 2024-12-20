@@ -1032,6 +1032,9 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 ![[Pasted image 20241220144145.png]]
 
 
+- **BaseAdapter**：抽象类，实际开发中我们会继承这个类并且重写相关方法，用得最多的一个Adapter！
+- **ArrayAdapter**：支持泛型操作，最简单的一个Adapter，只能展现一行文字~
+- **SimpleAdapter**：同样具有良好扩展性的一个Adapter，可以自定义多种效果！
 ### 基础引入
 
 代码中使用了`ListView`控件，在之后会介绍
@@ -1119,3 +1122,47 @@ mainactivity使用默认，即可达到下面的效果
 ![[Pasted image 20241220152501.png|350]]
 
 当然也可以布局保持不变，mainactivity改成
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this,
+            R.array.myarray, android.R.layout.simple_list_item_multiple_choice);
+    ListView list_test = findViewById(R.id.list_test);
+    list_test.setAdapter(adapter);
+}
+```
+2. 一开始也说了这个ArrayAdapter支持泛型，那么集合必不可少
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        ArrayList<String> list = new ArrayList<>();
+        list.add("玩机器");
+        list.add("6657");
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, list);
+        ListView list_test = findViewById(R.id.list_test);
+        list_test.setAdapter(adapter);
+    }
+}
+```
+
+![[Pasted image 20241220153720.png]]
+
+3. 实例化ArrayAdapter的第二个参数：`android.R.layout.simple_expandable_list_item_1`其实这些是系统给我们提供好的一些ListView模板，其他的比如：
+> `simple_list_item_1` : 单独一行的文本框
+
