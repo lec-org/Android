@@ -1023,4 +1023,11 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >SeekBar(拖动条)
 >RatingBar(星级评分条)
 >ScrollView(滚动条)
+>Date & Time组件
+
+
+## Adapter（适配器）
+
+适配器是 UI 组件和数据之间的桥梁，**它帮助我们将数据填充到 UI 组件当中**
+![[Pasted image 20241220144145.png]]
 
