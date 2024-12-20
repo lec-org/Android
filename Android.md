@@ -1291,10 +1291,207 @@ public class MainActivity extends AppCompatActivity {
     6. `new int[]{R.id.image, R.id.tv}`：对应字段在布局文件中的控件ID数组，这里表示字段"image"对应ID为R.id.image的ImageView控件，字段"text"对应ID为R.id.tv的TextView控件
 
 
-#### BaseAdpter
+#### BaseAdapter
 
-最基础的适配器类，可以做任何事情
+最基础的适配器类，可以做任何事情，不过使用麻烦。
 
+
+首先新建一个`ItemBean`类来存储数据，一般放在`entity.bean`包下
+![[Pasted image 20241220221352.png]]
+
+```java
+package com.learn.entity.bean;
+
+public class ItemBean {
+    private String name;
+    private int imageId;
+
+    public ItemBean(String name, int imageId) {
+        this.name = name;
+        this.imageId = imageId;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getImageId() {
+        return imageId;
+    }
+
+    public void setImageId(int imageId) {
+        this.imageId = imageId;
+    }
+}
+
+```
+
+*如何快速构建这种bean类？*
+
+> 使用`Ctrl + Alt + 上下键`可以触发多光标操作
+> 使用`Alt + Ins`可以选择快速构建get和set方法以及构造函数
+
+![[Jetbarins使用技巧.mp4]]
+
+之后在controller包中新建一个适配器类
+继承`BaseAdapter`类，自动生成四个重写方法
+![[Pasted image 20241220222448.png]]
+
+用`alt + enter`全选实现方法后编写代码
+```java
+package com.learn.controller;
+
+import android.content.Context;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.learn.R;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.List;
+
+/**
+ * 自定义适配器，用于在ListView中显示物品列表。
+ * 该适配器负责将数据集中的每个项目绑定到相应的视图上。
+ */
+public class MyAdapter extends BaseAdapter {
+    // 存储物品数据的列表
+    private List<ItemBean> mlist;
+    // LayoutInflater用于从XML文件中加载布局
+    private LayoutInflater mLayoutInflater;
+    // 上下文对象，用于获取资源和进行其他上下文相关的操作
+    private Context mcontext;
+
+    /**
+     * 构造函数初始化适配器。
+     *
+     * @param mlist    物品数据的列表
+     * @param mcontext 上下文对象，用于初始化LayoutInflater
+     */
+    public MyAdapter(List<ItemBean> mlist, Context mcontext) {
+        this.mlist = mlist;
+        this.mcontext = mcontext;
+        this.mLayoutInflater = LayoutInflater.from(mcontext);
+    }
+
+    // 返回数据集的大小
+    @Override
+    public int getCount() {
+        return mlist.size();
+    }
+
+    // 根据位置获取数据集中的物品。
+    @Override
+    public Object getItem(int position) {
+        return mlist.get(position);
+    }
+
+    // 获取物品在ListView中的唯一标识符
+    @Override
+    public long getItemId(int position) {
+        return position;
+    }
+
+    /**
+     * 为ListView的每个项目创建并返回一个视图。
+     *
+     * @param position    物品的位置
+     * @param convertView 当前被重用的视图
+     * @param parent      视图的父容器
+     * @return 绑定到数据集中的视图
+     */
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        // 使用LayoutInflater加载列表项的布局
+        convertView = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);
+
+        // 查找并初始化列表项中的ImageView和TextView
+        ImageView img = convertView.findViewById(R.id.image);
+        TextView tv = convertView.findViewById(R.id.tv);
+
+        // 获取当前位置的物品数据,设置ImageView的图片资源
+        ItemBean itemBean = mlist.get(position);
+        img.setImageResource(itemBean.getImageId());
+        tv.setText(itemBean.getName());
+
+        return convertView;
+    }
+}
+
+
+```
+
+说明：
+`convertView = mLayoutInflater.inflate(R.layout.list_item_layout, parent, false);`
+
+`mLayoutInflater`通过构造方法处的`LayoutInflater.from(mcontext)`赋值
+
+调用其`inflate`方法：
+1. `convertView`: 这个变量通常用来存储从布局文件转换而来的`View`对象。在`ListView`或`RecyclerView`的`getView()`方法中，它会被检查是否为空。如果非空，那么会直接使用这个`View`对象来展示数据，以避免频繁创建新的`View`，从而提高性能。
+2. `mLayoutInflater`: 这是一个`LayoutInflater`实例，它是Android框架提供的一个类，用于将XML布局文件转换为对应的View对象。
+3. `R.layout.list_item_layout`: 这是一个资源ID，指向了XML布局文件`list_item_layout.xml`。这个布局文件定义了一个`ListView`或`RecyclerView`中单个item的外观和结构，包括控件的类型、大小、位置以及样式等。
+4. `parent`: 这是一个`ViewGroup`类型的参数，代表了新创建的View最终将被添加到的父容器。在`ListView`或`RecyclerView`的情况下，`parent`就是`ListView`或`RecyclerView`本身。虽然在这个调用中，我们并没有立即把新创建的`View`添加到`parent`中（因为false参数），但这个参数还是需要的，因为它会影响`LayoutInflater`如何计算View的尺寸和位置。
+5. `false`: 这个布尔值参数告诉`LayoutInflater`不要将生成的`View`添加到`parent`中。这是因为`ListView`或`RecyclerView`有自己的逻辑来管理子`View`的添加和移除，它们会在适当的时候将`View`添加到自己内部的`ViewGroup`中。
+
+`MainActivity`
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class MainActivity extends AppCompatActivity {
+    private ListView mListView;
+    private BaseAdapter mBaseAdapter;
+    private List<ItemBean> mlist;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 初始化数据列表，这里使用了循环来添加多个数据项。
+        mlist = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            ItemBean itemBean1 = new ItemBean("苹果", R.drawable.apple);
+            ItemBean itemBean2 = new ItemBean("香蕉", R.drawable.banana);
+            ItemBean itemBean3 = new ItemBean("玩机器6657", R.drawable.machine);
+            mlist.add(itemBean1);
+            mlist.add(itemBean2);
+            mlist.add(itemBean3);
+        }
+
+        // 初始化ListView和其适配器
+        mListView = findViewById(R.id.lv);
+        mBaseAdapter = new MyAdapter(mlist, this);
+        mListView.setAdapter(mBaseAdapter);
+    }
+}
+```
+
+效果：
+![[Pasted image 20241220223721.png|375]]
 
 ### ListView
 
