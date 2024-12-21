@@ -1507,5 +1507,18 @@ public class MainActivity extends AppCompatActivity {
 
 > Toast是一种很方便的消息提示框,会在 屏幕中显示一个消息提示框,没任何按钮,也不会获得焦点，一段时间过后自动消失
 
+
 **makeText()方法创建**
+比如点击一个按钮，然后弹出Toast，用法： `Toast.makeText(this, "提示的内容", Toast.LENGTH_LONG).show();`
+ `Toast.LENGTH_LONG` (显示时间)
+- **类型**: `int`
+- **说明**:
+    - 这是 Toast 显示的持续时间。`Toast` 提供了两种预定义的常量：
+        - `Toast.LENGTH_SHORT`：显示时间较短，通常为 2-3 秒。
+        - `Toast.LENGTH_LONG`：显示时间较长，通常为 3-5 秒。
+
+自定义一个Toast方法
+```java
+
+```
 
