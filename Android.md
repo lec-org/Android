@@ -1659,12 +1659,13 @@ btn0 = findViewById(R.id.btn0);
 
 之后设置监听器，使用`setOnClickListener`函数，new一个匿名内部类，重写`onClick`方法
 ```java
-btn0.setOnClickListener(new View.OnClickListener() {
-    @Override
-    public void onClick(View v) {
-        btn0.setText("魔理沙");
-        Toast.makeText(getApplicationContext(), "Mast Spark!", Toast.LENGTH_LONG).show();
-    }
+btn0.setOnClickListener(new View.OnClickListener() {  
+    @Override  
+    public void onClick(View v) {  
+        // 把V强转成Button类型  
+        ((Button)v).setText("魔理沙");  
+        Toast.makeText(getApplicationContext(), "Master Spark!", Toast.LENGTH_LONG).show();  
+    }  
 });
 ```
 
@@ -1724,8 +1725,9 @@ public class MainActivity extends AppCompatActivity {
         btn0.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btn0.setText("魔理沙");
-                Toast.makeText(getApplicationContext(), "Mast Spark!", Toast.LENGTH_LONG).show();
+                // 把V强转成Button类型
+                ((Button) v).setText("魔理沙");
+                Toast.makeText(getApplicationContext(), "Master Spark!", Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -1734,10 +1736,233 @@ public class MainActivity extends AppCompatActivity {
 
 **其中，由于`OnClickListener`是一个函数式接口，也就是只有一个方法`onClick`，所以匿名内部类可以使用*Lambda表达式*实现**
 ```java
+// 使用拉姆达表达式
+btn0.setOnClickListener(v -> {
+    // 把V强转成Button类型
+    ((Button) v).setText("魔理沙");
+    Toast.makeText(getApplicationContext(), "Master Spark!", Toast.LENGTH_LONG).show();
+});
+```
 
+**匿名内部类是最常用的**
+
+### 使用内部类
+
+显而易见
+```java
+package com.learn;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+    class BtnListener implements View.OnClickListener {
+        @Override
+        public void onClick(View v) {
+            // 把V强转成Button类型
+            ((Button) v).setText("魔理沙");
+            Toast.makeText(getApplicationContext(), "Master Spark!", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private Button btn0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        btn0 = findViewById(R.id.btn0);
+        btn0.setOnClickListener(new BtnListener());
+    }
+}
 ```
 
 
+### 使用外部类
+
+不常用
+`外部类`
+```java
+package com.learn;
+
+import android.app.Activity;
+import android.app.Application;
+import android.content.Context;
+import android.view.View;
+import android.widget.Toast;
+
+public class Test implements View.OnClickListener {
+    Activity vv;
+
+    public Test(Activity vv) {
+        this.vv = vv;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(vv, "Test", Toast.LENGTH_LONG).show();
+    }
+}
+
+```
+
+```java
+package com.learn;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+
+
+    private Button btn0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        btn0 = findViewById(R.id.btn0);
+        btn0.setOnClickListener(new Test(this));
+    }
+}
+```
+
+
+### 直接使用Activity作为事件监听器
+
+即用这个类直接实现`OnClickListener`接口，在这个类里面重写`onClick`方法即可：
+```java
+package com.learn;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    private Button btn0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        btn0 = findViewById(R.id.btn0);
+        btn0.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        ((Button) v).setText("魔理沙");
+        Toast.makeText(this, "Master Spark!", Toast.LENGTH_LONG).show();
+    }
+}
+```
 ## 回调处理
 
 ## 多线程
