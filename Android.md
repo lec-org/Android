@@ -2002,6 +2002,8 @@ public void MyClick(View v) {
 
 ## 回调处理
 
+*待续*
+
 ## 多线程
 
 ### 基础使用
@@ -2018,3 +2020,14 @@ public void MyClick(View v) {
 ### 高级使用
 
 - 线程池（ThreadPool）
+
+*待续*
+
+
+---
+
+# 四大组件
+
+activity、service、content provider、broadcast receiver
+
+## activity
