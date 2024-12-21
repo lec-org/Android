@@ -1025,10 +1025,18 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >ScrollView(滚动条)
 >Date & Time组件
 
+*待续*
 
 ## Adapter（适配器）
 
 适配器是 UI 组件和数据之间的桥梁，**它帮助我们将数据填充到 UI 组件当中**
+这是一种典型的`MVC`架构
+
+> MVC 模式代表 Model-View-Controller（模型-视图-控制器） 模式。这种模式用于应用程序的分层开发。
+- **Model（模型）** - 模型代表一个存取数据的对象或 JAVA POJO。它也可以带有逻辑，在数据变化时更新控制器。
+- **View（视图）** - 视图代表模型包含的数据的可视化。
+- **Controller（控制器）** - 控制器作用于模型和视图上。它控制数据流向模型对象，并在数据变化时更新视图。它使视图与模型分离开。
+
 ![[Pasted image 20241220144145.png]]
 
 1. **ArrayAdapter**：适用于简单的数据源，如数组或列表。它将每个数据项转换为一个 `TextView` 或其他简单视图。
@@ -1500,6 +1508,7 @@ public class MainActivity extends AppCompatActivity {
 > `RecyclerView`是官方在5.0之后新添加的控件，推出用来替代传统的`ListView`和`GridView`列表控件。
 > 相对于 `ListView`，`RecyclerView` 提供了更多的功能和更好的性能。它引入了一些新的概念，如 `ViewHolder` 模式，更高效的滚动和动画支持，以及更灵活的布局管理器（`LayoutManager`）
 
+*待续*
 
 ### 其他控件
 
@@ -1584,3 +1593,24 @@ public class MainActivity extends AppCompatActivity {
 
 对于字体设置，可以使用`SpannableString` 来设置字体颜色
 对于自定义样式，可以使用自定义布局创建 Toast
+
+*待续*
+
+#### Notification(状态栏通知)
+
+#### AlertDialog(对话框)
+
+**基本使用流程**
+
+- **Step 1**：创建`AlertDialog.Builder`对象；
+- **Step 2**：调用`setIcon()`设置图标，`setTitle()`或`setCustomTitle()`设置标题；
+- **Step 3**：设置对话框的内容：`setMessage()`还有其他方法来指定显示的内容；
+- **Step 4**：调用`setPositive/Negative/NeutralButton()`设置：确定，取消，中立按钮；
+- **Step 5**：调用`create()`方法创建这个对象，再调用`show()`方法将对话框显示出来；
+
+*待续*
+
+---
+
+# 事件处理
+
