@@ -86,26 +86,28 @@ Java 文字：txtName.setText(getResources().getText(R.string.name));
 
 **示例代码：**
 ```java
-package com.example.myapp;
-
-import android.os.Bundle;
-import androidx.appcompat.app.AppCompatActivity;
-
-public class MainActivity extends AppCompatActivity {
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        // 绑定布局文件
-        setContentView(R.layout.activity_main);
-
-        // 示例：找到按钮并设置点击事件
-        findViewById(R.id.my_button).setOnClickListener(v -> {
-            // 响应逻辑
-            System.out.println("Button clicked!");
-        });
-    }
+import android.os.Bundle;  
+  
+import androidx.activity.EdgeToEdge;  
+import androidx.appcompat.app.AppCompatActivity;  
+import androidx.core.graphics.Insets;  
+import androidx.core.view.ViewCompat;  
+import androidx.core.view.WindowInsetsCompat;  
+  
+public class MainActivity extends AppCompatActivity {  
+  
+    @Override  
+    protected void onCreate(Bundle savedInstanceState) {  
+        super.onCreate(savedInstanceState);  
+        EdgeToEdge.enable(this);  
+        setContentView(R.layout.activity_main);  
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {  
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());  
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);  
+            return insets;  
+        });  
+    }  
 }
-
 ```
 
 #### *activity_main.xml*
@@ -987,6 +989,13 @@ public class MainActivity extends AppCompatActivity {
 子视图通过属性`android:layout_x`和`android:layout_y` 来确定当前视图在屏幕上的位置，x,y就是坐标点 x轴的值和y轴的值
 过于绝对，无法做到千人千面，不建议使用
 
+
+### 帧布局
+
+这个布局直接在屏幕上开辟出一块空白的区域,当我们往里面添加控件的时候,会默认把他们放到这块区域的左上角,而这种布局方式却没有任何的定位方式,所以它应用的场景并不多
+帧布局的大小由控件中最大的子控件决定
+
+略
 ### 约束布局
 
 `ConstraintLayout`是`Android官方`在2016年Google的I/O大会推出的一种可以灵活控制子控件的位置和大小的新布局方式，也是目前Android的几大布局中功能最强大的布局。在最新版的`Android Studio中`，创建布局文件的默认根元素都是`ConstraintLayout`了。`ConstraintLayout`非常适合使用**可视化**的方式来编写界面，但并不太适合使用XML的方式来进行编写
@@ -995,12 +1004,6 @@ https://guolin.blog.csdn.net/article/details/53122387
 https://blog.csdn.net/huweiliyi/article/details/122894823
 
 
-### 帧布局
-
-这个布局直接在屏幕上开辟出一块空白的区域,当我们往里面添加控件的时候,会默认把他们放到这块区域的左上角,而这种布局方式却没有任何的定位方式,所以它应用的场景并不多
-帧布局的大小由控件中最大的子控件决定
-
-略
 
 
 ## 布局检查器
@@ -1614,3 +1617,51 @@ public class MainActivity extends AppCompatActivity {
 
 # 事件处理
 
+当用户在程序界面执行各种操作时，应用程序需要为用户动作提供响应动作，这种响应动作需要通过事件处理来完成
+除了介绍处理方式之外，还必须介绍多线程的相关知识
+
+## 监听处理
+
+响应用户的操作，然后在后台加上相应的操作。比如：我们点击了页面上的一个按钮，事件监听捕捉到了`点击`，然后再给出用户一种**反馈**
+![[Pasted image 20241221153536.png|900]]
+
+**写一个事件大致步骤为：**
+- 进行`UI`设计
+- 加载`UI`，获得控件
+- `为该控件设置监听器`，监听用户的操作
+- 用户触发事件源的监听器
+- `生成对应事件对象`
+- 将产生的事件对象作为参数`传入事件处理器`
+- 对事件对象进行`判断`，`执行对应的事件的处理方法`
+
+对于事件监听，有五种实现方式、
+*举例，点击一个按钮，弹出一个`Toast`*
+直接使用拖动方式创建一个带按钮的布局即可，id设置成`btn0`
+
+在这之前，先介绍一下前面提到的`MainActivity.java`的内容
+`线性布局示例代码`
+```java
+
+```
+
+### 直接使用匿名内部类
+
+
+## 回调处理
+
+## 多线程
+
+### 基础使用
+
+- 继承Thread类
+- 实现Runnable接口
+- Handler
+### 复合使用
+
+- AsyncTask
+- HandlerThread
+- IntentService
+
+### 高级使用
+
+- 线程池（ThreadPool）
