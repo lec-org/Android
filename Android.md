@@ -1500,3 +1500,12 @@ public class MainActivity extends AppCompatActivity {
 > `RecyclerView`是官方在5.0之后新添加的控件，推出用来替代传统的`ListView`和`GridView`列表控件。
 > 相对于 `ListView`，`RecyclerView` 提供了更多的功能和更好的性能。它引入了一些新的概念，如 `ViewHolder` 模式，更高效的滚动和动画支持，以及更灵活的布局管理器（`LayoutManager`）
 
+
+### 其他控件
+
+#### Toast
+
+> Toast是一种很方便的消息提示框,会在 屏幕中显示一个消息提示框,没任何按钮,也不会获得焦点，一段时间过后自动消失
+
+**makeText()方法创建**
+
