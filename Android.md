@@ -86,6 +86,8 @@ Java 文字：txtName.setText(getResources().getText(R.string.name));
 
 **示例代码：**
 ```java
+package edu.swpu.iot2022.myapplication;  
+  
 import android.os.Bundle;  
   
 import androidx.activity.EdgeToEdge;  
@@ -95,20 +97,28 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;  
   
 public class MainActivity extends AppCompatActivity {  
-  
+    // 重写 onCreate 方法，在 Activity 创建时调用  
     @Override  
     protected void onCreate(Bundle savedInstanceState) {  
-        super.onCreate(savedInstanceState);  
+        super.onCreate(savedInstanceState);  // 调用父类的 onCreate 方法，进行默认的初始化工作  
+        // 启用 Edge-to-Edge 功能，允许 Activity 使用系统的边界区域（如屏幕顶部、底部）  
         EdgeToEdge.enable(this);  
-        setContentView(R.layout.activity_main);  
+        // 设置当前 Activity 使用的布局文件，activity_main.xml 是布局的资源 ID        setContentView(R.layout.activity_main);  
+        // 为界面中的一个视图（ID 为 main 的视图）设置窗口内边距监听器  
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {  
+            // 获取系统条（状态栏、导航栏等）的内边距  
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());  
+            // 设置视图的内边距，使其避开系统条区域  
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);  
+            // 返回原始的 insets 对象  
             return insets;  
         });  
     }  
 }
 ```
+
+*其实`super.onCreate(savedInstanceState)`下的代码都是为全面屏而准备的*
+
 
 #### *activity_main.xml*
 
@@ -1638,13 +1648,94 @@ public class MainActivity extends AppCompatActivity {
 *举例，点击一个按钮，弹出一个`Toast`*
 直接使用拖动方式创建一个带按钮的布局即可，id设置成`btn0`
 
-在这之前，先介绍一下前面提到的`MainActivity.java`的内容
-`线性布局示例代码`
+
+### 直接使用匿名内部类
+
+首先需要加载获取这个按钮控件
+```java
+private Button btn0;
+btn0 = findViewById(R.id.btn0);
+```
+
+之后设置监听器，使用`setOnClickListener`函数，new一个匿名内部类，重写`onClick`方法
+```java
+btn0.setOnClickListener(new View.OnClickListener() {
+    @Override
+    public void onClick(View v) {
+        btn0.setText("魔理沙");
+        Toast.makeText(getApplicationContext(), "Mast Spark!", Toast.LENGTH_LONG).show();
+    }
+});
+```
+
+效果：
+![[Pasted image 20241221162607.png|800]]
+
+总体代码
+```java
+package com.learn;
+
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.activity.EdgeToEdge;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+public class MainActivity extends AppCompatActivity {
+    private Button btn0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+
+        btn0 = findViewById(R.id.btn0);
+        btn0.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn0.setText("魔理沙");
+                Toast.makeText(getApplicationContext(), "Mast Spark!", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+}
+```
+
+**其中，由于`OnClickListener`是一个函数式接口，也就是只有一个方法`onClick`，所以匿名内部类可以使用*Lambda表达式*实现**
 ```java
 
 ```
-
-### 直接使用匿名内部类
 
 
 ## 回调处理
