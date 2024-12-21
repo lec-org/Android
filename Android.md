@@ -1519,6 +1519,68 @@ public class MainActivity extends AppCompatActivity {
 
 自定义一个Toast方法
 ```java
+package com.learn;
 
+import android.graphics.Color;
+import android.os.Bundle;
+import android.view.Gravity;
+import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListView;
+import android.widget.SimpleAdapter;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import com.learn.controller.MyAdapter;
+import com.learn.entity.bean.ItemBean;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    // 自定义的 midToast 方法，用于显示定制化的 Toast 消息
+    void midToast(String str, int showTime) {
+        // 创建 Toast 对象，传入上下文、消息文本和显示时间
+        Toast toast = Toast.makeText(this, str, showTime);
+
+        // 设置 Toast 显示位置
+        // Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL：让 Toast 在屏幕的中央显示
+        // 0, 0：偏移量设置为 0，表示不做额外的位移，保持在屏幕中央
+        toast.setGravity(Gravity.CENTER_VERTICAL | Gravity.CENTER_HORIZONTAL, 0, 0);
+
+        // 获取 Toast 的 View（即 Toast 的内容视图）
+        // 通过 android.R.id.message 找到显示消息文本的 TextView
+        TextView v = (TextView) toast.getView().findViewById(android.R.id.message);
+
+        // 设置 Toast 中显示的文本颜色为黄色
+        v.setTextColor(Color.YELLOW);
+
+        // 显示 Toast
+        toast.show();
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        midToast("Hello World!", Toast.LENGTH_SHORT);
+    }
+}
 ```
 
+![[Pasted image 20241221145329.png|325]]
+
+
+**注意**
+这种方式在API23（安卓12）以上已经失效，因为`Toast` 的视图内容（`TextView`）的访问权限发生了变化。在 Android 12 及以上版本中，`Toast` 被认为是一个 **系统级别的 UI 组件**，其内容的访问权限可能被限制
+
+对于字体设置，可以使用`SpannableString` 来设置字体颜色
+对于自定义样式，可以使用自定义布局创建 Toast
