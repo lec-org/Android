@@ -1937,8 +1937,6 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-
-
     private Button btn0;
 
     @Override
@@ -1963,6 +1961,45 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 }
 ```
+
+### 直接绑定到标签
+
+```xml
+<?xml version="1.0" encoding="utf-8" ?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:id="@+id/main"
+        android:layout_height="match_parent">
+
+
+    <Button
+            android:text="Marisa"
+            android:layout_width="131dp"
+            android:textSize="25sp"
+            android:layout_height="87dp"
+            android:id="@+id/btn0"
+            android:onClick="MyClick"
+            android:layout_centerInParent="true" />
+</RelativeLayout>
+
+```
+
+自定义方法，注意，必须是public
+```java
+public void MyClick(View v) {
+    ((Button) v).setText("魔理沙");
+    Toast.makeText(this, "Master Spark", Toast.LENGTH_SHORT).show();
+}
+```
+
+
+
+我们给同一事件源设置了多个同种类型的监听器，会是怎么执行的呢？
+
+**答案：** 系统会默认执行，给事件源最后设置的这一个监听器，其他监听器不会执行。在xml文件中设置的onClick属性是最先设置的监听器，那么当有同种类型的其他监听器的话，会执行其他的监听器。
+
+
 ## 回调处理
 
 ## 多线程
