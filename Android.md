@@ -2031,3 +2031,66 @@ public void MyClick(View v) {
 activity、service、content provider、broadcast receiver
 
 ## activity
+
+### 引言
+
+> Activity是一个应用程序的组件，他在屏幕上提供了一个区域，允许用户在上面做一些交互性的操作， 比如打电话，照相，发送邮件，或者显示一个地图！Activity可以理解成一个绘制用户界面的窗口， 而这个窗口可以填满整个屏幕，也可能比屏幕小或者浮动在其他窗口的上方！
+
+因此，我们知道：
+1. Activity用来显示用户界面，用户可以交互
+2. 一个App可以有多个Activity
+
+
+### 基础
+
+#### 概念与生命周期
+
+![[Pasted image 20241222101600.png]]
+
+https://developer.android.google.cn/guide/components/activities/activity-lifecycle?hl=zh-cn
+
+**创建阶段**
+- **`onCreate()`**：这是 Activity 生命周期的第一个方法。在 Activity 被创建时，系统会调用此方法。通常在此方法中进行初始化操作，例如设置视图、绑定数据等。
+- **`onStart()`**：`onCreate()` 后调用，表示 Activity 已经对用户可见，但还没有处于前台与用户交互的状态。这个方法通常用于恢复在 `onPause()` 时保存的资源或数据。
+
+ **激活阶段**
+- **`onResume()`**：`onStart()` 后调用，表示 Activity 已经进入了前台并且开始与用户交互。此时，Activity 是活跃的，用户可以与其进行交互。
+
+**暂停与停止阶段**
+- **`onPause()`**：当系统需要回收资源时，或当用户导航到另一个 Activity 时，当前 Activity 会进入暂停状态。此时，用户无法与 Activity 交互，但 Activity 仍然在内存中。一般来说，这个方法会用于保存数据、暂停动画等。
+- **`onStop()`**：当 Activity 不再对用户可见时，系统会调用该方法。此时，Activity 可能会被销毁或被暂时置于后台。此方法通常用于释放占用的资源，保存用户的状态，或者保存 Activity 的数据。
+
+**销毁阶段**
+- **`onRestart()`**：当 Activity 从停止状态恢复并重新变为可见时，系统会调用此方法。这个方法通常在 `onStop()` 和 `onStart()` 之间调用，用于恢复一些资源或者状态。
+- **`onDestroy()`**：当 Activity 被销毁时，系统会调用此方法。此时可以清理 Activity 使用的所有资源，进行内存释放等操作。通常用于释放长时间占用的资源、停止后台线程等。
+
+
+#### 创建流程
+
+![[Pasted image 20241222103255.png]]
+
+> Android中的四大组件，只要你定义了，无论你用没用，都要在AndroidManifest.xml对 这个组件进行声明
+
+
+**PS**
+在用Android Studio生成重写函数的时候，发现有这样一个选项，其中oncreate有两个函数
+```java
+@Override
+public void onCreate(Bundle savedInstanceState, PersistableBundle persistentState) {
+    super.onCreate(savedInstanceState, persistentState);
+}
+```
+
+之前代码中的只有一个函数
+```java
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+}
+```
+
+这是安卓5.0之后的新方法，要想启用这个方法，需要现在配置文件中设置属性：
+```xml
+android:persistableMode="persistAcrossReboots"
+```
+
