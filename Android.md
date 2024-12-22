@@ -1013,13 +1013,12 @@ public class MainActivity extends AppCompatActivity {
 https://guolin.blog.csdn.net/article/details/53122387
 https://blog.csdn.net/huweiliyi/article/details/122894823
 
-
-
-
+---
 ## 布局检查器
 
 https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 
+---
 ## 控件
 
 常用控件：
@@ -1039,6 +1038,8 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >Date & Time组件
 
 *待续*
+
+---
 
 ## Adapter（适配器）
 
@@ -2000,9 +2001,13 @@ public void MyClick(View v) {
 **答案：** 系统会默认执行，给事件源最后设置的这一个监听器，其他监听器不会执行。在xml文件中设置的onClick属性是最先设置的监听器，那么当有同种类型的其他监听器的话，会执行其他的监听器。
 
 
+---
+
 ## 回调处理
 
 *待续*
+
+---
 
 ## 多线程
 
@@ -2023,14 +2028,13 @@ public void MyClick(View v) {
 
 *待续*
 
-
 ---
 
 # 四大组件
 
 activity、service、content provider、broadcast receiver
 
-## activity
+## Activity
 
 ### 引言
 
@@ -2785,5 +2789,20 @@ public class NewActivity extends AppCompatActivity {
 
 ##### 序列化数据传递
 
-*待续
-*
+*待续*
+
+
+
+#### 多个Activity间的交互(后一个传回给前一个)
+*待续*
+
+
+### 进阶
+
+*待续*
+
+
+---
+
+## Service
+
