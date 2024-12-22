@@ -2270,3 +2270,7 @@ intent.setData(personUri);
 startActivity(intent);
 ```
 
+### 高级
+
+#### Activity的数据传递
+
