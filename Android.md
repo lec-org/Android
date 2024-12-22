@@ -2298,6 +2298,92 @@ startActivity(intent);
 
 ##### 简单传递
 
+**学校实验内容**
+
+手搓这个app
+![[Pasted image 20241222150727.png|750]]
+
+`activity_main`
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+    <TextView
+            android:text="请输入身高和选择性别"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <RadioGroup
+            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+        <RadioButton
+                android:id="@+id/rbMale"
+                android:text="男"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        <RadioButton
+                android:id="@+id/rbFemale"
+                android:text="女"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+    </RadioGroup>
+
+    <EditText
+            android:id="@+id/etHeight"
+            android:hint="身高 (cm)"
+            android:inputType="numberDecimal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    <Button
+            android:id="@+id/btnCalculate"
+            android:text="计算标准体重"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+</LinearLayout>
+
+```
+
+`activity_new`
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+    <TextView
+            android:id="@+id/tvResult"
+            android:textSize="18sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+    <Button
+            android:id="@+id/btnBack"
+            android:text="返回"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+</LinearLayout>
+
+```
+
+**记得在清单文件中宣布新的act，不然会崩溃**
+```xml
+<activity  
+        android:name=".NewActivity"  
+        android:exported="true" />
+```
+
+
 **只使用Intent**
 
 `MainActivity` -> `NewActivity`
@@ -2308,3 +2394,396 @@ Intent intent = new Intent(MainActivity.this, NewActivity.class);
 intent.putExtra("key", value);
 startActivity(intent)
 ```
+
+- 收数据
+```java
+Intent intent = getIntent();
+// 同样键值对模式，第二个参数代表默认值
+类型 data = intent.getxxxExtra("key", 0);
+```
+
+完整代码
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText etHeight;
+    private RadioButton rbMale;
+    private RadioButton rbFemale;
+    private Button btnCalculate;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 初始化控件
+        etHeight = findViewById(R.id.etHeight);
+        rbMale = findViewById(R.id.rbMale);
+        rbFemale = findViewById(R.id.rbFemale);
+        btnCalculate = findViewById(R.id.btnCalculate);
+
+        // 设置按钮点击事件
+        btnCalculate.setOnClickListener(v -> {
+            // 获取输入的身高
+            String heightStr = etHeight.getText().toString().trim();
+            if (heightStr.isEmpty()) {
+                etHeight.setError("请输入身高");
+                return;
+            }
+
+            // 转换身高为数字
+            double height = Double.parseDouble(heightStr);
+
+            // 获取性别
+            String sex = "";
+            if (rbMale.isChecked()) {
+                sex = "M";  // 男性
+            } else if (rbFemale.isChecked()) {
+                sex = "F";  // 女性
+            } else {
+                Toast.makeText(MainActivity.this, "请选择性别", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // 创建 Intent 并传递数据
+            Intent intent = new Intent(MainActivity.this, NewActivity.class);
+            intent.putExtra("height", height);
+            intent.putExtra("sex", sex);
+            startActivity(intent);
+        });
+    }
+}
+
+```
+
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class NewActivity extends AppCompatActivity {
+    private TextView tvResult;
+    private Button btnBack;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new);
+
+        // 初始化控件
+        tvResult = findViewById(R.id.tvResult);
+        btnBack = findViewById(R.id.btnBack);
+
+        // 获取传递过来的数据
+        Intent intent = getIntent();
+        double height = intent.getDoubleExtra("height", 0);
+        String sex = intent.getStringExtra("sex");
+
+        // 根据性别计算标准体重
+        String sexText = sex.equals("M") ? "男性" : "女性";
+        String weight = (sex.equals("M")) ? String.format("%.2f", (height - 80) * 0.7) : String.format("%.2f", (height - 70) * 0.6);
+
+        // 显示结果
+        tvResult.setText("你是一位" + sexText + "\n身高: " + height + " cm\n标准体重: " + weight + " kg");
+
+        // 返回按钮事件
+        btnBack.setOnClickListener(v -> finish());
+    }
+}
+
+```
+
+
+**利用Bundle**
+
+`MainActivity` -> `NewActivity`
+
+- 发数据
+```java
+Intent intent = new Intent(MainActivity.this, NewActivity.class);
+Bundle bundle = new Bundle();
+bundle.putxxx("k1", v1);
+bundle.putxxx("k2", v2);
+intent.putExtra(bundle);
+startActivity(intent)
+```
+
+- 收数据
+```java
+Intent intent = getIntent();
+Bundle bundle = intent.getExtras();
+// 同样键值对模式，第二个参数代表默认值
+类型 data = bundle.getxxx("k", 0);
+```
+
+完整代码，这里把发数据的过程用方法封装
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
+    private EditText etHeight;
+    private RadioButton rbMale;
+    private RadioButton rbFemale;
+    private Button btnCalculate;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 初始化控件
+        etHeight = findViewById(R.id.etHeight);
+        rbMale = findViewById(R.id.rbMale);
+        rbFemale = findViewById(R.id.rbFemale);
+        btnCalculate = findViewById(R.id.btnCalculate);
+
+        // 设置按钮点击事件
+        btnCalculate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 获取输入的身高
+                String heightStr = etHeight.getText().toString().trim();
+                if (heightStr.isEmpty()) {
+                    etHeight.setError("请输入身高");
+                    return;
+                }
+
+                // 转换身高为数字
+                double height = Double.parseDouble(heightStr);
+
+                // 获取性别
+                String sex = "";
+                if (rbMale.isChecked()) {
+                    sex = "M";  // 男性
+                } else if (rbFemale.isChecked()) {
+                    sex = "F";  // 女性
+                } else {
+                    Toast.makeText(MainActivity.this, "请选择性别", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // 使用 Bundle 传递数据
+                Bundle bundle = new Bundle();
+                bundle.putDouble("height", height);
+                bundle.putString("sex", sex);
+
+                // 启动 NewActivity，并通过 Bundle 传递数据
+                NewActivity.startActivityWithBundle(MainActivity.this, bundle);
+            }
+        });
+    }
+}
+
+```
+
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+public class NewActivity extends AppCompatActivity {
+    private TextView tvResult;
+    private Button btnBack;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new);
+
+        // 初始化控件
+        tvResult = findViewById(R.id.tvResult);
+        btnBack = findViewById(R.id.btnBack);
+
+        // 获取传递过来的 Bundle 数据
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            double height = bundle.getDouble("height", 0);
+            String sex = bundle.getString("sex");
+
+            // 根据性别计算标准体重
+            String sexText = sex.equals("M") ? "男性" : "女性";
+            String weight = (sex.equals("M")) ? String.format("%.2f", (height - 80) * 0.7) : String.format("%.2f", (height - 70) * 0.6);
+
+            // 显示结果
+            tvResult.setText("你是一位" + sexText + "\n身高: " + height + " cm\n标准体重: " + weight + " kg");
+        }
+
+        // 返回按钮事件
+        btnBack.setOnClickListener(v -> finish());
+    }
+
+    // 用静态方法简化 Activity 启动
+    public static void startActivityWithBundle(MainActivity mainActivity, Bundle bundle) {
+        Intent intent = new Intent(mainActivity, NewActivity.class);
+        intent.putExtras(bundle);
+        mainActivity.startActivity(intent);
+    }
+}
+
+```
+
+
+
+前面提到，`Bundle`可以存储更复杂的数据结构，下面是一个传递`ArrayList`的例子
+
+![[Pasted image 20241222153224.png]]
+
+![[Pasted image 20241222153236.png]]
+
+`activity_main`
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <Button
+            android:id="@+id/button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Send ArrayList" />
+</LinearLayout>
+
+```
+
+`activity_new`
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="18sp" />
+</LinearLayout>
+
+```
+
+`MainActivity`
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class MainActivity extends AppCompatActivity {
+    private Button button;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        button = findViewById(R.id.button);
+
+        // 创建一个 ArrayList 数据
+        ArrayList<String> itemList = new ArrayList<>();
+        itemList.add("Item 1");
+        itemList.add("Item 2");
+        itemList.add("Item 3");
+
+        // 设置按钮点击事件，发送数据到另一个 Activity
+        button.setOnClickListener(v -> {
+            // 创建 Bundle 来封装数据
+            Bundle bundle = new Bundle();
+            bundle.putStringArrayList("itemList", itemList);
+
+            // 创建 Intent 并将 Bundle 添加到 Intent 中
+            Intent intent = new Intent(MainActivity.this, NewActivity.class);
+            intent.putExtras(bundle);
+
+            // 启动目标 Activity
+            startActivity(intent);
+        });
+    }
+}
+
+```
+
+`NewActivity`
+```java
+package com.learn;
+
+import android.os.Bundle;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+
+public class NewActivity extends AppCompatActivity {
+    private TextView textView;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_new);
+
+        textView = findViewById(R.id.textView);
+
+        // 获取传递过来的数据
+        Bundle bundle = getIntent().getExtras();
+        if (bundle != null) {
+            ArrayList<String> itemList = bundle.getStringArrayList("itemList");
+
+            if (itemList != null) {
+                // 显示 ArrayList 的内容
+                StringBuilder stringBuilder = new StringBuilder();
+                for (String item : itemList) {
+                    stringBuilder.append(item).append("\n");
+                }
+                textView.setText(stringBuilder.toString());
+            }
+        }
+    }
+}
+
+```
+
+##### 序列化数据传递
+
+*待续
+*
