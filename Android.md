@@ -2274,3 +2274,22 @@ startActivity(intent);
 
 #### Activity的数据传递
 
+- 简单数据传递
+	**Intent**
+		Intent 是在 Android 中传递数据的最简单方法。它可以携带各种数据类型，包括字符串、数字和布尔值。使用 Intent 传递数据只需几个简单的步骤：
+		在发送数据的 Activity 中，使用 `putExtra()` 方法将数据添加到 Intent 中。
+		启动目标 Activity，将 Intent 作为参数传递。
+		在目标 Activity 中，使用 `getIntent()` 方法获取 Intent，然后使用 `getExtra()` 方法检索数据。
+	**Bundle**
+		Bundle 与 Intent 类似，但它专门用于传递小块数据。与 Intent 相比，Bundle 的使用更加灵活，可以存储更复杂的数据结构，如哈希表和列表。
+
+- 复杂自定义对象传递（序列化）
+	**Serializable**
+		Serializable 接口允许您传递自定义对象。要使用 Serializable，您需要实现该接口并在传递对象之前对其进行序列化。在目标 Activity 中，反序列化对象以访问数据。
+	**Parcel**
+		Parcel 是 Android 框架中用于高效序列化和反序列化对象的类。它比 Serializable 更高效，但需要更多的手动编码。
+
+
+
+
+
