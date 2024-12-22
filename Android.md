@@ -2283,13 +2283,28 @@ startActivity(intent);
 	**Bundle**
 		Bundle 与 Intent 类似，但它专门用于传递小块数据。与 Intent 相比，Bundle 的使用更加灵活，可以存储更复杂的数据结构，如哈希表和列表。
 
-- 复杂自定义对象传递（序列化）
+- 复杂自定义对象传递（序列化）*待续*
 	**Serializable**
 		Serializable 接口允许您传递自定义对象。要使用 Serializable，您需要实现该接口并在传递对象之前对其进行序列化。在目标 Activity 中，反序列化对象以访问数据。
 	**Parcel**
 		Parcel 是 Android 框架中用于高效序列化和反序列化对象的类。它比 Serializable 更高效，但需要更多的手动编码。
 
+**note：**
+- 对于简单的数据类型，优先使用 Intent 或 Bundle。
+- 避免传递大数据，因为这可能会导致应用程序崩溃。
+- 使用有意义的键来标识 Intent 和 Bundle 中的数据。
+- 考虑使用单例模式来存储会话数据，以便在所有 Activity 中可用。
+> 单例模式（Singleton Pattern）是一种设计模式，属于创建型模式。它的核心思想是确保一个类只有一个实例，并提供一个全局访问点来获取该实例。简而言之，单例模式确保某个类在整个应用程序中只有一个实例，并且这个实例可以被多个对象共享。
 
+##### 简单传递
 
+**只使用Intent**
 
+`MainActivity` -> `NewActivity`
 
+- 发数据
+```java
+Intent intent = new Intent(MainActivity.this, NewActivity.class);
+intent.putExtra("key", value);
+startActivity(intent)
+```
