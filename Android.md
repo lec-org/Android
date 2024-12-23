@@ -1037,6 +1037,48 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >ScrollView(滚动条)
 >Date & Time组件
 
+### 进度条
+
+
+**常用属性**
+
+|          属性名          |                                      含义                                      |
+| :-------------------: | :--------------------------------------------------------------------------: |
+|         style         |                                   设置进度条的风格                                   |
+|          max          |                                  设置该进度条的最大值                                  |
+|       maxHeight       |                                 进度Widget最大高                                  |
+|      miniHeight       |                                 进度Widget最小高                                  |
+|       maxWidth        |                                 进度Widget最大宽                                  |
+|       minWidth        |                                 进度Widget最小宽                                  |
+|       progress        |                                设置该进度条的已完成进度值                                 |
+|   progressDrawable    |                                自定义drawable显示                                 |
+| indeteminateDrawable  |                           设置绘制不显示进度的进度条的Drawable对象                           |
+|     indeterminate     |                            该属性设为true，设置进度条不精确显示进度                            |
+| indeteminateDuration  |                                设置不精确显示进度的持续时间                                |
+|   secondaryProgress   |     定义二级进度值，值介于0到max。该进度在主进度和背景之间。比如用于网络播放视频时，二级进度用于表示缓冲进度，主进度用于表示播放进度。      |
+|     interpolator      |                                    设置动画速度                                    |
+| indeterminateBehavior | 定义当进度达到最大时，不确定模式的表现；该值必须为repeat或者cycle，repeat表示进度从0重新开始；cycle表示进度保持当前值，并且回到0 |
+
+**style属性：**
+- @android:style/Widget.ProgressBar.Horizontal：水平进度条
+- @android:style/Widget.ProgressBar.Inverse：普通大小的进度条
+- @android:style/Widget.ProgressBar.Large：大环形进度条
+- @android:style/Widget.ProgressBar.Large.Inverse：大环形进度条
+- @android:style/Widget.ProgressBar.Small：小环形进度条
+- @android:style/Widget.ProgressBar.Small.Inverse：小环形进度条
+
+代码中常用逻辑：
+```java
+getMax() //返回这个进度条的范围的上限
+getProgress() //返回进度
+getsecondaryProgress() //返回二级进度
+incrementProgressBy(int diff) //指定增加的进度
+isIndeterminate() //指示进度条是否在不确定模式下
+setIndeterminate(boolean indeterminate) //设置不确定模式下
+
+```
+
+
 *待续*
 
 ---
