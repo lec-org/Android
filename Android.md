@@ -1075,9 +1075,181 @@ getsecondaryProgress() //返回二级进度
 incrementProgressBy(int diff) //指定增加的进度
 isIndeterminate() //指示进度条是否在不确定模式下
 setIndeterminate(boolean indeterminate) //设置不确定模式下
+setProgress(int progress) // 设置进度
+```
+
+```xml
+<!--默认圆形加载条-->
+<ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
+
+<!--长条加载条-->
+<ProgressBar
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_gravity="center" />
+
+<!--不同主题长条加载条-->
+<ProgressBar
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:layout_gravity="center" />
+```
+
+![[Pasted image 20241223094617.png]]
+
+
+
+要想实现真实的进度显示，需要利用多线程和`Hander`消息转发
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="水平进度条"
+            android:layout_marginTop="50dp"
+            android:layout_gravity="center" />
+
+    <ProgressBar
+            android:id="@+id/progress_01"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:max="100"
+            android:layout_marginTop="100dp"
+            android:padding="20dp"
+            style="@style/Widget.AppCompat.ProgressBar.Horizontal" />
+
+    <TextView
+            android:id="@+id/tv_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/progress_01"
+            android:layout_centerHorizontal="true" />
+    
+</LinearLayout>
 
 ```
 
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.util.ArrayList;
+import java.util.Random;
+
+public class MainActivity extends AppCompatActivity {
+
+    private ProgressBar mProgressBar;
+    private TextView mTextView;
+    private int start = 0, maxprogress;
+
+    private final Handler mHandler = new Handler(Looper.getMainLooper()) {
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case 0:
+                    mTextView.setText(start + " %");  // 更新进度
+                    mProgressBar.setProgress(start);
+                    break;
+            }
+        }
+    };
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        mProgressBar = findViewById(R.id.progress_01);
+        mTextView = findViewById(R.id.tv_progress);
+        maxprogress = mProgressBar.getMax();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        // 启动线程加载
+        new Thread() {
+            @Override
+            public void run() {
+                while (true) {
+                    try {
+                        Thread.sleep(102);// 线程休眠
+                        int a = new Random().nextInt(10);// 产生一个10以内的随机数
+                        start += a;
+                        if (start > maxprogress) {// 如果进程超过最大值
+                            start = maxprogress;
+                            mHandler.sendEmptyMessage(0);
+                            break;
+                        }
+                        mHandler.sendEmptyMessage(0);// 在安卓里。我们不能直接在线程中更新UI，这里用Hander消息处理
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }.start();
+    }
+}
+
+```
+
+
+**PS：如何弹出一个对话框来显示加载条**
+
+1. 使用 ProgressDialog（已被弃用，不推荐）
+```java
+ProgressDialog progressDialog = new ProgressDialog(this);
+progressDialog.setMessage("正在加载...");
+progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER); // 旋转风格（没有进度条）
+progressDialog.setIndeterminate(true); // 设置为不确定进度
+progressDialog.setCancelable(false); // 设置为不可取消
+progressDialog.show();
+
+// 在操作完成后，记得关闭对话框
+progressDialog.dismiss();
+```
+
+2. 使用 AlertDialog 与 ProgressBar 结合
+```java
+AlertDialog.Builder builder = new AlertDialog.Builder(this);
+builder.setTitle("加载中").setMessage("loading...").setCancelable(false);  // 不允许用户点击外部取消对话框
+// 创建进度条
+ProgressBar progressBar = new ProgressBar(this);
+progressBar.setIndeterminate(true);  // 设置为不确定模式（无具体进度显示）
+// 将进度条添加到对话框
+builder.setView(progressBar);
+// 创建并显示对话框
+AlertDialog dialog = builder.create();
+dialog.show();
+```
 
 *待续*
 
