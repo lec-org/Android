@@ -3350,7 +3350,6 @@ public class BindService extends Service {
     private int count;
     private boolean quit;
     private Thread thread;
-    private LocalBinder binder = new LocalBinder();
 
     /**
      * 创建Binder对象，返回给客户端即Activity使用，提供数据交换的接口
@@ -3364,12 +3363,12 @@ public class BindService extends Service {
     }
 
     /**
-     * 把Binder类返回给客户端
+     * 把LocalBinder类的实例返回给客户端
      */
     @Override
     public IBinder onBind(Intent intent) {
         Log.i(TAG, "Service is invoke onBind");
-        return binder;
+        return new LocalBinder();
     }
 
 
@@ -3425,7 +3424,7 @@ public class BindService extends Service {
 
 `BindService`类继承自`Service`，在该类中创建了一个`LocalBinder`继承自`Binder`类，`LocalBinder`中声明了一个`getService`方法，客户端可访问该方法获取`BindService`对象的实例，只要客户端获取到`BindService`对象的实例，就可调用`BindService`服务端的公共方法，如`getCount`方法
 
-值得注意的是，我们在`onBind`方法中返回了`binder`对象，该对象便是`LocalBinder`的具体实例，而`binder`对象最终会返回给客户端，客户端通过返回的`binder`对象便可以与服务端实现交互
+值得注意的是，我们在`onBind`方法中返回了`LocalBinder`的具体实例，而该实例最终会返回给客户端，客户端通过返回的实例对象便可以与服务端实现交互
 
 
 `客户端实现MainActivity`
@@ -3567,12 +3566,17 @@ public class MainActivity extends AppCompatActivity {
     该方法执行解除绑定的操作，其中ServiceConnection代表与服务的连接，它只有两个方法，前面已分析过。
 
 
-Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的`onServiceConnected()`便会被回调并可以获取到`BindService`实例对象`mService`，之后我们就可以调用`BindService`服务端的公共方法了，最后还需要在清单文件中声明该Service
+Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的`onServiceConnected()`便会被回调并可以获取到`BindService`实例对象`mService`，之后我们就可以调用`BindService`服务端的公共方法了
+
+**也就是说，客户端通过回调，获得了一个服务端提供的`Binder`对象，以这个对象为中间人，客户端由此获得了服务端的所有公共方法(public)的使用权限**
+
+最后还需要在清单文件中声明该Service
 
 
 *运行效果*
 ![[Pasted image 20241223170830.png]]
 
-根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会以此被调用，而`onBind()`这个回调函数会返回一个`IBinder`对象
+根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会依次被调用，而`onBind()`这个回调函数会返回一个`IBinder`对象
 
 此时客户端`ServiceConnection`类中`onServiceConnected()`方法被调用，`onBind()`方法返回的`IBinder`对象传递给到方法`onServiceConnected(ComponentName name, IBinder service)`的`service`参数中，方法顺势获得了
+
