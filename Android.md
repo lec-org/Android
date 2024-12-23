@@ -3286,6 +3286,8 @@ public int onStartCommand(Intent intent, int flags, int startId) {
 - ***使用 AIDL***
     *由于Messenger是以串行的方式处理客户端发来的消息，如果当前有大量消息同时发送到Service(服务端)，Service仍然只能一个个处理，这也就是Messenger跨进程通信的缺点了，因此如果有大量并发请求，Messenger就会显得力不从心了，这时AIDL（Android 接口定义语言）就派上用场了， 但实际上Messenger 的跨进程方式其底层实现就是AIDL，只不过android系统帮我们封装成透明的Messenger罢了 。因此，如果我们想让服务同时处理多个请求，则应该使用 AIDL。 在此情况下，服务必须具备多线程处理能力，并采用线程安全式设计。使用AIDL必须创建一个定义编程接口的 .aidl 文件。Android SDK 工具利用该文件生成一个实现接口并处理 IPC 的抽象类，随后可在服务内对其进行扩展。*
 
+
+
 ##### 扩展 Binder 类
 
 前面描述过，如果我们的服务仅供本地应用使用，不需要跨进程工作，则可以实现自有 Binder 类，让客户端通过该类直接访问服务中的公共方法。其使用开发步骤如下
@@ -3296,4 +3298,97 @@ public int onStartCommand(Intent intent, int flags, int startId) {
 
 注意：此方式只有在客户端和服务位于同一应用和进程内才有效，如对于需要将 Activity 绑定到在后台播放音乐的自有服务的音乐应用，此方式非常有效。另一点之所以要求服务和客户端必须在同一应用内，是为了便于客户端转换返回的对象和正确调用其 API。服务和客户端还必须在同一进程内，因为此方式不执行任何跨进程编组
 
+
+*例程*
+
+`服务实现BindService.java`
+```java
+package com.learn;
+
+import android.app.Service;
+import android.content.Intent;
+import android.os.Binder;
+import android.os.IBinder;
+import android.util.Log;
+
+public class BindService extends Service {
+    private final static String TAG = "kmj";
+    private int count;
+    private boolean quit;
+    private Thread thread;
+    private LocalBinder binder = new LocalBinder();
+
+    /**
+     * 创建Binder对象，返回给客户端即Activity使用，提供数据交换的接口
+     */
+    public class LocalBinder extends Binder {
+        // 声明一个方法，getService。（提供给客户端调用）
+        BindService getService() {
+            // 返回当前对象BindService,这样我们就可在客户端端调用Service的公共方法了
+            return BindService.this;
+        }
+    }
+
+    /**
+     * 把Binder类返回给客户端
+     */
+    @Override
+    public IBinder onBind(Intent intent) {
+        return binder;
+    }
+
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.i(TAG, "Service is invoke Created");
+        thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                // 每间隔一秒count加1 ，直到quit为true。
+                while (!quit) {
+                    try {
+                        Thread.sleep(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    count++;
+                }
+            }
+        });
+        thread.start();
+    }
+
+    /**
+     * 公共方法
+     *
+     * @return
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * 解除绑定时调用
+     *
+     * @return
+     */
+    @Override
+    public boolean onUnbind(Intent intent) {
+        Log.i(TAG, "Service is invoke onUnbind");
+        return super.onUnbind(intent);
+    }
+
+    @Override
+    public void onDestroy() {
+        Log.i(TAG, "Service is invoke Destroyed");
+        this.quit = true;
+        super.onDestroy();
+    }
+}
+```
+
+`BindService`类继承自`Service`，在该类中创建了一个`LocalBinder`继承自`Binder`类，`LocalBinder`中声明了一个`getService`方法，客户端可访问该方法获取`LocalService`对象的实例，只要客户端获取到`LocalService`对象的实例，就可调用`LocalService`服务端的公共方法，如`getCount`方法
+
+值得注意的是，我们在`onBind`方法中返回了`binder`对象，该对象便是`LocalBinder`的具体实例，而`binder`对象最终会返回给客户端，客户端通过返回的`binder`对象便可以与服务端实现交互
 
