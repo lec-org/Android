@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity {
     // 重写 onCreate 方法，在 Activity 创建时调用  
     @Override  
     protected void onCreate(Bundle savedInstanceState) {  
+    	// 建议把所有对应的调用父类的方法的代码写在开头
         super.onCreate(savedInstanceState);  // 调用父类的 onCreate 方法，进行默认的初始化工作  
         // 启用 Edge-to-Edge 功能，允许 Activity 使用系统的边界区域（如屏幕顶部、底部）  
         EdgeToEdge.enable(this);  
@@ -3613,4 +3614,109 @@ Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的
 
 广播，是应用程序间的全局大喇叭，即通信的一个手段
 
-比如：系统很多时候都在自己发送广播，比如开机成功、准备关机、电池电量低、插入耳机、
+比如：系统很多时候都在自己发送广播，比如开机成功、准备关机、电池电量低、插入耳机、收到来电......此之谓系统广播，每个APP都会收到，只需注册一个`BroadcastReceiver`
+
+![[Pasted image 20241223220059.png]]
+
+无序广播（标准广播）
+
+### 基础用法
+
+#### 接收广播
+
+![[Pasted image 20241223220218.png|800]]
+
+![[Pasted image 20241223220229.png|800]]
+
+##### 动态注册
+
+*实现：一开始没有联网，但是打开wifi之后过一会出现Toast提示*
+
+自定义一个BroadcastReceiver，在onReceive()方法中完成广播要处理的事务
+```java
+package com.learn;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+public class MyBRReceiver extends BroadcastReceiver {
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        Toast.makeText(context, "网络改变", Toast.LENGTH_SHORT).show();
+        Log.i("", "网络改变");
+    }
+}
+
+```
+
+`MainActivity`中动态注册广播：
+```java
+package com.learn;
+
+import android.content.IntentFilter;
+import android.os.Bundle;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        MyBRReceiver myBRReceiver = new MyBRReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(myBRReceiver, intentFilter);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(new MyBRReceiver());
+    }
+}
+```
+
+![[Pasted image 20241223221841.png]]
+
+动态注册很简答，但是需要程序启动才能接收广播
+
+##### 静态注册
+
+*示例：接收开机广播*
+
+自定义一个BroadcastReceiver，重写onReceive完成事务处理
+```java
+package com.learn;
+
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+public class BootCompleteReceiver extends BroadcastReceiver {
+
+    private final String ACTION_BOOT = "android.intent.action.BOOT_COMPLETED";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (ACTION_BOOT.equals(intent.getAction()))
+            Toast.makeText(context, "开机完毕~", Toast.LENGTH_LONG).show();
+        Log.d("kmj", "开机完毕");
+    }
+}
+```
+
+不同于动态注册，静态注册必须在清单中声明，同时添加开机广播的过滤条目并申请权限
+```xml
+<!--权限-->
+<uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+
+```
