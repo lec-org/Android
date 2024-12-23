@@ -3290,7 +3290,7 @@ public int onStartCommand(Intent intent, int flags, int startId) {
 
 前面描述过，如果我们的服务仅供本地应用使用，不需要跨进程工作，则可以实现自有 Binder 类，让客户端通过该类直接访问服务中的公共方法。其使用开发步骤如下
 
-1. 创建BindService服务端，继承自Service并在类中，创建一个实现IBinder 接口的实例对象并提供公共方法给客户端调用
+1. 创建BindService服务端，继承自Service，并在类中创建一个实现IBinder 接口的实例对象并提供公共方法给客户端调用
 2. 从 onBind() 回调方法返回此 Binder 实例。
 3. 在客户端中，从 onServiceConnected() 回调方法接收 Binder，并使用提供的方法调用绑定服务。
 
