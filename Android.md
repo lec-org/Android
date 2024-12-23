@@ -3140,3 +3140,4 @@ public class SimpleService extends Service {
 
 - **onDestroy()**
   当服务不再使用且将被销毁时，系统将调用此方法。服务应该实现此方法来清理所有资源，如线程、注册的侦听器、接收器等，这是服务接收的最后一个调用。
+
