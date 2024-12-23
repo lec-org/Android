@@ -117,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 }
 ```
 
-*其实`super.onCreate(savedInstanceState)`下的代码都是为全面屏而准备的*
+*其实`super.onCreate(savedInstanceState)`之下的代码都是为全面屏而准备的*
 
 
 #### *activity_main.xml*
@@ -128,6 +128,8 @@ public class MainActivity extends AppCompatActivity {
 - **与 Java 逻辑文件关联**：UI 元素通过 `findViewById()` 方法与逻辑代码交互。
 
 #### *AndroidManifest.xml*
+
+应用清单
 
 **作用：**
 - **定义应用的元信息**：描述应用的名称、图标、版本号等基本信息。
@@ -691,9 +693,11 @@ public class MainActivity extends AppCompatActivity {
 
 其中，组件1与组件2互为兄弟，与组件3无关
 
+
 > NOTE：
 > `margin`针对的是容器中的组件，而`padding`针对的是组件中的元素
 
+*差别示例：*
 ```xml
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
@@ -2032,6 +2036,7 @@ public class MainActivity extends AppCompatActivity {
 ### 使用外部类
 
 不常用
+
 `外部类`
 ```java
 package com.learn;
@@ -3263,4 +3268,32 @@ public int onStartCommand(Intent intent, int flags, int startId) {
 
 
 #### 绑定服务
+
+绑定服务是Service的另一种变形，当Service处于绑定状态时，其代表着`客户端-服务器`接口中的**服务器**
+
+当其他组件（如 Activity）绑定到服务时（有时我们可能需要从Activity组件中去调用Service中的方法，此时Activity以绑定的方式挂靠到Service后，我们就可以轻松地访问到Service中的指定方法），组件（如Activity）可以向Service（也就是服务端）发送请求，或者调用Service（服务端）的方法，此时被绑定的Service（服务端）会接收信息并响应，甚至可以通过绑定服务进行执行进程间通信 (即IPC，这个后面再单独分析)
+
+与启动服务不同的是**绑定服务的生命周期通常只在为其他应用组件(如Activity)服务时处于活动状态，不会无限期在后台运行**，也就是说宿主(如Activity)解除绑定后，绑定服务就会被销毁
+
+要想运行绑定服务，我们必须提供一个`IBinder`接口的实现类，该类用以提供客户端用来与服务进行交互的编程接口，该接口可以通过三种方法定义接口：
+
+- **扩展 Binder 类**  
+	如果服务是提供给自有应用专用的，并且Service(服务端)与客户端在**相同的进程**中运行（常见情况），则应通过扩展 Binder 类并从 `onBind()` 返回它的一个实例来创建接口。客户端收到 Binder 后，可利用它直接访问 Binder 实现中以及Service中可用的公共方法。如果我们的服务只是自有应用的后台工作线程，则优先采用这种方法。 *不采用该方式创建接口的唯一情况是，服务被其他应用或不同的进程调用*
+    
+- **使用 Messenger**  
+    Messenger可以翻译为信使，通过它可以在不同的进程中共传递Message对象(Handler中的Messager，因此 Handler 是 Messenger 的基础)，在Message中可以存放我们需要传递的数据，然后在进程间传递。如果需要让接口跨不同的进程工作，则可使用 Messenger 为服务创建接口，客户端就可利用 Message 对象向服务发送命令。同时客户端也可定义自有 Messenger，以便服务回传消息。这是执行进程间通信 (IPC) 的最简单方法，因为 Messenger 会在单一线程中创建包含所有请求的队列，也就是说Messenger是以串行的方式处理客户端发来的消息，这样我们就不必对服务进行线程安全设计了。
+    
+- ***使用 AIDL***
+    *由于Messenger是以串行的方式处理客户端发来的消息，如果当前有大量消息同时发送到Service(服务端)，Service仍然只能一个个处理，这也就是Messenger跨进程通信的缺点了，因此如果有大量并发请求，Messenger就会显得力不从心了，这时AIDL（Android 接口定义语言）就派上用场了， 但实际上Messenger 的跨进程方式其底层实现就是AIDL，只不过android系统帮我们封装成透明的Messenger罢了 。因此，如果我们想让服务同时处理多个请求，则应该使用 AIDL。 在此情况下，服务必须具备多线程处理能力，并采用线程安全式设计。使用AIDL必须创建一个定义编程接口的 .aidl 文件。Android SDK 工具利用该文件生成一个实现接口并处理 IPC 的抽象类，随后可在服务内对其进行扩展。*
+
+##### 扩展 Binder 类
+
+前面描述过，如果我们的服务仅供本地应用使用，不需要跨进程工作，则可以实现自有 Binder 类，让客户端通过该类直接访问服务中的公共方法。其使用开发步骤如下
+
+1. 创建BindService服务端，继承自Service并在类中，创建一个实现IBinder 接口的实例对象并提供公共方法给客户端调用
+2. 从 onBind() 回调方法返回此 Binder 实例。
+3. 在客户端中，从 onServiceConnected() 回调方法接收 Binder，并使用提供的方法调用绑定服务。
+
+注意：此方式只有在客户端和服务位于同一应用和进程内才有效，如对于需要将 Activity 绑定到在后台播放音乐的自有服务的音乐应用，此方式非常有效。另一点之所以要求服务和客户端必须在同一应用内，是为了便于客户端转换返回的对象和正确调用其 API。服务和客户端还必须在同一进程内，因为此方式不执行任何跨进程编组
+
 
