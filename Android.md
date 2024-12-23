@@ -3573,4 +3573,6 @@ Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的
 *运行效果*
 ![[Pasted image 20241223170830.png]]
 
-根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会以此被调用，此时客户端`ServiceConnection`类中`onServiceConnected()`方法被调用并返回
+根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会以此被调用，而`onBind()`这个回调函数会返回一个`IBinder`对象
+
+此时客户端`ServiceConnection`类中`onServiceConnected()`方法被调用，`onBind()`方法返回的`IBinder`对象传递给到方法`onServiceConnected(ComponentName name, IBinder service)`的`service`参数中，方法顺势获得了
