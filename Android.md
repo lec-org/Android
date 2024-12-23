@@ -3020,7 +3020,7 @@ public class NewActivity extends AppCompatActivity {
 
 ## Service
 
-## 概述
+### 概述
 
 服务与线程没有太大的关系，服务允许开发者执行后台任务，而无需用户界面
 
@@ -3034,8 +3034,9 @@ public class NewActivity extends AppCompatActivity {
 
 ![[Pasted image 20241223111328.png]]
 
+---
 
-## 清单声明
+### 清单声明
 
 ```xml
 <service android:enabled=["true" | "false"]
@@ -3057,8 +3058,9 @@ public class NewActivity extends AppCompatActivity {
 - android:isolatedProcess ：设置 true 意味着，服务会在一个特殊的进程下运行，这个进程与系统其他进程分开且没有自己的权限。与其通信的唯一途径是通过服务的API(bind and start)。
 - android:enabled：是否可以被系统实例化，默认为 true因为父标签 也有 enable 属性，所以必须两个都为默认值 true 的情况下服务才会被激活，否则不会激活。
 
+---
 
-## 服务使用
+### 服务使用
 
 Android中使用Service的方式有两种：
 
@@ -3067,7 +3069,7 @@ Android中使用Service的方式有两种：
 > PS:还有一种，就是启动Service后，绑定Service！
 
 
-### 启动服务
+#### 启动服务
 
 首先要创建服务，必须创建 Service 的子类（或使用它的一个现有子类如IntentService）。在实现中，我们需要重写一些回调方法，以处理服务生命周期的某些关键过程
 
@@ -3140,4 +3142,125 @@ public class SimpleService extends Service {
 
 - **onDestroy()**
   当服务不再使用且将被销毁时，系统将调用此方法。服务应该实现此方法来清理所有资源，如线程、注册的侦听器、接收器等，这是服务接收的最后一个调用。
+
+
+可以写一段程序验证一下服务启动的时候的回调状态与顺序，布局中新建两个按钮，MainActivity代码如下：
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+
+import android.view.View;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+    private Button startBtn;
+    private Button stopBtn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        startBtn = findViewById(R.id.startService);
+        stopBtn = findViewById(R.id.stopService);
+        startBtn.setOnClickListener(this);
+        stopBtn.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent it = new Intent(this, SimpleService.class);
+        if (v.getId() == R.id.startService) {
+            startService(it);
+        } else if (v.getId() == R.id.stopService) {
+            stopService(it);
+        }
+    }
+}
+```
+
+不要忘记配置清单
+```xml
+<manifest ... >
+  ...
+  <application ... >
+      <service android:name=".service.SimpleService" />
+      ...
+  </application>
+</manifest>
+```
+
+点击按钮，观察服务启动状态
+![[Pasted image 20241223130709.png]]
+
+如上面所言，onCreate是首次回调，onStartCommand每次启动都会回调
+
+> 从代码看出，启动服务使用`startService(Intent intent)`方法，仅需要传递一个**Intent对象**即可，在Intent对象中指定需要启动的服务。而使用`startService()`方法启动的服务，在服务的**外部**，必须使用`stopService()`方法停止，在服务的**内部**可以调用`stopSelf()`方法停止当前服务。如果使用`startService()`或者`stopSelf()`方法请求停止服务，系统会就会尽快销毁这个服务。值得注意的是对于启动服务，一旦启动，将与访问它的组件无任何关联，即使访问它的组件被销毁了，这个服务也一直运行下去，直到手动调用停止服务才被销毁，至于onBind方法，只有在绑定服务时才会起作用，在启动状态下，无需关注此方法
+
+
+下面，让我们回过头来解析一下`onStartCommand`函数
+
+**onStartCommand（Intent intent, int flags, int startId）**
+
+- **intent** ：启动时，启动组件传递过来的Intent，如Activity可利用Intent封装所需要的参数并**传递**给Service
+    
+- **flags**：表示启动请求时是否有额外数据，可选值有 `0`，`START_FLAG_REDELIVERY`，`START_FLAG_RETRY`，0代表没有，它们具体含义如下：
+    - **START_FLAG_REDELIVERY**  
+        这个值代表了onStartCommand方法的返回值为  
+        `START_REDELIVER_INTENT`，而且在上一次服务被杀死前会去调用stopSelf方法停止服务。其中`START_REDELIVER_INTENT`意味着当Service因内存不足而被系统kill后，则会重建服务，并通过传递给服务的最后一个 Intent 调用 onStartCommand()，此时Intent时有值的。
+    - **START_FLAG_RETRY**  
+        该flag代表当onStartCommand调用后一直没有返回值时，会尝试重新去调用onStartCommand()。
+
+*例子：*
+```java
+@Override
+public int onStartCommand(Intent intent, int flags, int startId) {
+    if (flags == START_FLAG_REDELIVERY) {
+        // 重新传递了 Intent，可能是服务被杀死后重建
+        Log.d("MyService", "Service is being redeployed with the last intent.");
+    } else if (flags == START_FLAG_RETRY) {
+        // 表示需要重试
+        Log.d("MyService", "Service is retrying operation.");
+    }
+    return START_NOT_STICKY;
+}
+```
+
+- **startId** ： 指明当前服务的唯一ID，与stopSelfResult (int startId)配合使用，stopSelfResult 可以更安全地根据ID停止服务。
+
+*例子：*
+```java
+@Override
+public int onStartCommand(Intent intent, int flags, int startId) {
+    Log.d("MyService", "Service started with startId: " + startId);
+
+    // 假设做一些操作
+    new Thread(() -> {
+        // 执行任务
+        // 完成后停止当前服务
+        stopSelfResult(startId);
+    }).start();
+
+    return START_NOT_STICKY;
+}
+```
+
+实际上onStartCommand的返回值int类型才是最最值得注意的，它有三种可选值， `START_STICKY`，`START_NOT_STICKY`，`START_REDELIVER_INTENT`，它们具体含义如下：
+
+- **START_STICKY**  
+      当Service因内存不足而被系统kill后，一段时间后内存再次空闲时，系统将会尝试重新创建此Service，一旦创建成功后将回调onStartCommand方法，但其中的Intent将是null，除非有挂起的Intent，如pendingintent，这个状态下比较适用于不执行命令、但无限期运行并等待作业的媒体播放器或类似服务。
+    
+- **START_NOT_STICKY**  
+      当Service因内存不足而被系统kill后，即使系统内存再次空闲时，系统也不会尝试重新创建此Service。除非程序中再次调用startService启动此Service，这是最安全的选项，可以避免在不必要时以及应用能够轻松重启所有未完成的作业时运行服务。
+    
+- **START_REDELIVER_INTENT**  
+      当Service因内存不足而被系统kill后，则会重建服务，并通过传递给服务的最后一个 Intent 调用 onStartCommand()，任何挂起 Intent均依次传递。与START_STICKY不同的是，其中的传递的Intent将是非空，是最后一次调用startService中的intent。这个值适用于主动执行应该立即恢复的作业（例如下载文件）的服务。
+
+
+#### 绑定服务
 
