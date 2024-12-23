@@ -3719,4 +3719,18 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 <!--权限-->
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 
+<receiver
+        android:name=".BootCompleteReceiver"
+        android:exported="true">
+    <intent-filter>
+        <action android:name="android.intent.action.BOOT_COMPLETED" />
+    </intent-filter>
+</receiver>
 ```
+
+> `android:exported="true"`代表组件可以被其他程序访问，允许其他应用向它发送广播
+
+重启手机后发现接收到了广播
+![[Pasted image 20241223223351.png]]
+
+
