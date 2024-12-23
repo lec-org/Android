@@ -3576,7 +3576,41 @@ Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的
 *运行效果*
 ![[Pasted image 20241223170830.png]]
 
-根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会依次被调用，而`onBind()`这个回调函数会返回一个`IBinder`对象
+根据Log，在`onCreate()`执行完之后，总体执行顺序为：
 
-此时客户端`ServiceConnection`类中`onServiceConnected()`方法被调用，`onBind()`方法返回的`IBinder`对象传递给到方法`onServiceConnected(ComponentName name, IBinder service)`的`service`参数中，方法顺势获得了
+服务端`onBind()` -> `new LocalBinder()` -> 客户端`onServiceConnected(ComponentName name, IBinder service)`的`service`参数中 -> 转换为自定义`Binder`类型(因为得到的参数是一个接口) -> 调用服务端`getService()`获取整个服务端对象 -> 有资格使用所有服务端公开方法
 
+> **NOTE:**
+> 多次调用BindService方法绑定服务端，而BindService的onBind方法只调用了一次，那就是在第一次调用BindService时才会回调onBind方法
+> 多次绑定只需一次解绑
+> 绑定状态下的Service生命周期方法的调用依次为onCreate()、onBind、onUnBind、onDestroy
+
+
+##### 使用Messenger
+
+前面了解了如何使用IBinder应用内同一进程的通信后，我们接着来了解服务与远程进程（即不同进程间）通信，而不同进程间的通信，最简单的方式就是使用 Messenger 服务提供通信接口，利用此方式，我们无需使用 AIDL 便可执行进程间通信 (IPC)。以下是 Messenger 使用的主要步骤：
+
+- 1.服务实现一个 Handler，由其接收来自客户端的每个调用的回调
+    
+- 2.Handler 用于创建 Messenger 对象（对 Handler 的引用）
+    
+- 3.Messenger 创建一个 IBinder，服务通过 onBind() 使其返回客户端
+    
+- 4.客户端使用 IBinder 将 Messenger（引用服务的 Handler）实例化，然后使用Messenger将 Message 对象发送给服务
+    
+- 5.服务在其 Handler 中（在 handleMessage() 方法中）接收每个 Message
+
+
+*待续*
+
+
+
+---
+
+
+## BroadcastReceiver
+
+
+广播，是应用程序间的全局大喇叭，即通信的一个手段
+
+比如：系统很多时候都在自己发送广播，比如开机成功、准备关机、电池电量低、插入耳机、
