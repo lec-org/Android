@@ -3567,4 +3567,4 @@ public class MainActivity extends AppCompatActivity {
     该方法执行解除绑定的操作，其中ServiceConnection代表与服务的连接，它只有两个方法，前面已分析过。
 
 
-Activity通过bindService()绑定到LocalService后，ServiceConnection类的onServiceConnected()便会被回调并可以获取到LocalService实例对象mService，之后我们就可以调用LocalService服务端的公共方法了，最后还需要在清单文件中声明该Service
+Activity通过`bindService()`绑定到LocalService后，ServiceConnection类的onServiceConnected()便会被回调并可以获取到LocalService实例对象mService，之后我们就可以调用LocalService服务端的公共方法了，最后还需要在清单文件中声明该Service
