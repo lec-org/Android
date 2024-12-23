@@ -3573,4 +3573,4 @@ Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的
 *运行效果*
 ![[Pasted image 20241223170830.png]]
 
-根据Log，我们在第一次点击绑定服务的时候，
+根据Log，我们在第一次点击绑定服务的时候，服务端的`onCreate()`、`onBind()`方法会以此被调用，此时客户端`ServiceConnection`类中`onServiceConnected()`方法被调用并返回
