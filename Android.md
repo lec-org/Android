@@ -3423,7 +3423,7 @@ public class BindService extends Service {
 }
 ```
 
-`BindService`类继承自`Service`，在该类中创建了一个`LocalBinder`继承自`Binder`类，`LocalBinder`中声明了一个`getService`方法，客户端可访问该方法获取`LocalService`对象的实例，只要客户端获取到`LocalService`对象的实例，就可调用`LocalService`服务端的公共方法，如`getCount`方法
+`BindService`类继承自`Service`，在该类中创建了一个`LocalBinder`继承自`Binder`类，`LocalBinder`中声明了一个`getService`方法，客户端可访问该方法获取`BindService`对象的实例，只要客户端获取到`BindService`对象的实例，就可调用`BindService`服务端的公共方法，如`getCount`方法
 
 值得注意的是，我们在`onBind`方法中返回了`binder`对象，该对象便是`LocalBinder`的具体实例，而`binder`对象最终会返回给客户端，客户端通过返回的`binder`对象便可以与服务端实现交互
 
@@ -3553,13 +3553,13 @@ public class MainActivity extends AppCompatActivity {
 
 在客户端中我们创建了一个ServiceConnection对象，该代表与服务的连接，它只有两个方法， `onServiceConnected`和`onServiceDisconnected`，其含义如下：
 - **onServiceConnected(ComponentName name, IBinder service)**  
-    系统会调用该方法以传递服务的　onBind() 方法返回的 IBinder。其中service便是服务端返回的IBinder实现类对象，通过该对象我们便可以调用获取LocalService实例对象，进而调用服务端的公共方法。而ComponentName是一个封装了组件(Activity, Service, BroadcastReceiver, or ContentProvider)信息的类，如包名，组件描述等信息，较少使用该参数。
+    系统会调用该方法以传递服务的　onBind() 方法返回的 IBinder。其中service便是服务端返回的IBinder实现类对象，通过该对象我们便可以调用获取BindService实例对象，进而调用服务端的公共方法。而ComponentName是一个封装了组件(Activity, Service, BroadcastReceiver, or ContentProvider)信息的类，如包名，组件描述等信息，较少使用该参数。
 
 - **onServiceDisconnected(ComponentName name)**  
     Android 系统会在与服务的连接意外中断时（例如当服务崩溃或被终止时）调用该方法。注意:当客户端取消绑定时，系统“绝对不会”调用该方法。
 
 
-在onServiceConnected()被回调前，我们还需先把当前Activity绑定到服务LocalService上，绑定服务是通过通过bindService()方法，解绑服务则使用unbindService()方法，这两个方法解析如下：
+在onServiceConnected()被回调前，我们还需先把当前Activity绑定到服务BindService上，绑定服务是通过通过bindService()方法，解绑服务则使用unbindService()方法，这两个方法解析如下：
 - **bindService(Intent service, ServiceConnection conn, int flags)**  
     该方法执行绑定服务操作，其中Intent是我们要绑定的服务(也就是BindService)的意图，而ServiceConnection代表与服务的连接，它只有两个方法，前面已分析过。flags则是指定绑定时是否自动创建Service。0代表不自动创建、BIND_AUTO_CREATE则代表自动创建。
 
@@ -3567,4 +3567,10 @@ public class MainActivity extends AppCompatActivity {
     该方法执行解除绑定的操作，其中ServiceConnection代表与服务的连接，它只有两个方法，前面已分析过。
 
 
-Activity通过`bindService()`绑定到LocalService后，ServiceConnection类的onServiceConnected()便会被回调并可以获取到LocalService实例对象mService，之后我们就可以调用LocalService服务端的公共方法了，最后还需要在清单文件中声明该Service
+Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的`onServiceConnected()`便会被回调并可以获取到`BindService`实例对象`mService`，之后我们就可以调用`BindService`服务端的公共方法了，最后还需要在清单文件中声明该Service
+
+
+*运行效果*
+![[Pasted image 20241223170830.png]]
+
+根据Log，我们在第一次点击绑定服务的时候，
