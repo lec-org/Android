@@ -3622,11 +3622,15 @@ Activity通过`bindService()`绑定到`BindService`后，ServiceConnection类的
 
 ### 基础用法
 
+
+
 #### 接收广播
 
 ![[Pasted image 20241223220218.png|800]]
 
 ![[Pasted image 20241223220229.png|800]]
+
+
 
 ##### 动态注册
 
@@ -3734,3 +3738,20 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 ![[Pasted image 20241223223351.png]]
 
 
+> **NOTE**:
+> 不要在广播里添加过多逻辑或者进行任何耗时操作,因为在广播中是不允许开辟线程的, 当onReceiver()方法运行较长时间(超过10秒)还没有结束的话,那么程序会报错(ANR), 广播更多的时候扮演的是一个打开其他组件的角色,比如启动Service,Notification提示, Activity等
+
+
+#### 发送广播
+
+需要提前定义一个接收器
+
+![[Pasted image 20241224082559.png|650]]
+
+
+*示例(标准/无序广播)：*
+
+`MyBroadcastReceiver`
+```java
+
+```
