@@ -4113,9 +4113,64 @@ public void read() {
 
 下面是沙盒区域内的文件操作(`Download`)
 ```java
+public void save() {
+    String folderName = Environment.DIRECTORY_DOWNLOADS;
+    String filename = "Reimu.fumo";
+    String content = "fumo\nfumo\nMarisa";
+    try {
+        // 获取公共存储区域路径
+        File publicDir = new File(Environment.getExternalStoragePublicDirectory(folderName), filename);
 
+        if (!publicDir.getParentFile().exists()) {
+            publicDir.getParentFile().mkdirs(); // 创建目录
+        }
+
+        // 写入文件
+        FileWriter writer = new FileWriter(publicDir);
+        writer.write(content);
+        writer.close();
+
+        Log.d("kmj", "File written to: " + publicDir.getAbsolutePath());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+// 读取文件
+public void read() {
+    String folderName = Environment.DIRECTORY_DOWNLOADS;
+    String filename = "Reimu.fumo";
+    try {
+        // 获取文件路径
+        File file = new File(Environment.getExternalStoragePublicDirectory(folderName), filename);
+
+        if (file.exists()) {
+            // 读取文件内容
+            FileReader reader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            Log.d("kmj", content.toString());
+            bufferedReader.close();
+        } else {
+            Log.e("kmj", "File does not exist!\"");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
 ```
 
+![[Pasted image 20241224194800.png]]
 
 
+---
+
+
+## SharedPreferences
+
+这个类似于Windows中的ini文件
 
