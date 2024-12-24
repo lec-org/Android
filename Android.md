@@ -1,3 +1,4 @@
+
 # 前置了解
 
 使用`Android Studio`开发
@@ -3862,3 +3863,32 @@ public class MainActivity extends AppCompatActivity {
 
 
 文件流模式
+```java
+public void save() {
+    try {
+        FileOutputStream outStream = this.openFileOutput("a.txt", Context.MODE_APPEND);
+
+        outStream.write("Hello World".getBytes());
+
+        outStream.close();
+
+        Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
+
+    } catch (FileNotFoundException e) {
+
+        return;
+
+    } catch (IOException e) {
+
+        return;
+
+    }
+
+}
+```
+
+openFileOutput()方法的第一参数用于指定文件名称，不能包含路径分隔符“/” ，如果文件不存在，Android 会自动创建它
+
+创建的文件保存在`/data/data/<包>/files/xx` 中
+> 这是一个系统根目录，如果没有root权限，其他程序（包括用户）无权限查看，只有应用本身能操作
+
