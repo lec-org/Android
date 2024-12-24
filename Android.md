@@ -3990,10 +3990,118 @@ public void read() {
 
 
 **查看文件列表**
+方法已给出
 *待续*
 
 **删除文件**
 *待续*
 
+
+> **NOTE：**
+> 内部存储路径为`/data/data/<packagename>/files/`，这里在安卓系统的根目录下，如果没有root，那么用户将无法查看该文件，适合存储专有内部存储文件
+
+
+### 外部存储
+
+对于外部存储，无法使用`openFileOutput()`，只能使用Java IO中的`File`类和`FileWriter`类
+
+先看一个对比表格：
+
+| 特性       | `openFileOutput()` | `FileWriter`         |
+| -------- | ------------------ | -------------------- |
+| **存储位置** | 应用内部存储             | 任意存储位置（需要指定路径）       |
+| **安全性**  | 默认高，只能被应用自身访问      | 依赖存储位置和文件权限          |
+| **操作对象** | 字节流                | 字符流                  |
+| **适用场景** | 简单的内部存储文件写入        | 更灵活复杂的文件写入操作         |
+| **权限需求** | 不需要额外权限            | 写入外部存储需要权限（应用专属目录除外） |
+
+同样，也有访问外部存储目录的方法
+```java
+public void load() {
+    File filesDir = getExternalFilesDir(null);// 持久文件目录
+    // FilesDir：/storage/emulated/0/Android/data/com.learn/files
+    Log.e("File", "FilesDir：" + filesDir.getAbsolutePath());
+}
+```
+
+**参数详解：**
+
+| **参数值**                           | **目录结构**            | **用途** |
+| --------------------------------- | ------------------- | ------ |
+| `null`                            | `/files/`           | 通用文件存储 |
+| `Environment.DIRECTORY_PICTURES`  | `/files/Pictures/`  | 存储图片文件 |
+| `Environment.DIRECTORY_MUSIC`     | `/files/Music/`     | 存储音乐文件 |
+| `Environment.DIRECTORY_DOCUMENTS` | `/files/Documents/` | 存储文档文件 |
+
+验证存储是否可用：
+```java
+// 检查外部存储是否可用于读写。
+private boolean isExternalStorageWritable() {
+    return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
+}
+ 
+// 检查外部存储至少可读。
+private boolean isExternalStorageReadable() {
+     return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) ||
+            Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED_READ_ONLY);
+}
+```
+
+
+**应用专属目录**
+
+```java
+
+public void save() {
+    String filename = "Komeiji";
+    String content = "Touhou\nProject";
+    try {
+        // 获取应用私有的外部存储目录
+        File file = new File(getExternalFilesDir(null), filename);
+
+        // 写入文件
+        FileWriter writer = new FileWriter(file);
+        writer.write(content);
+        writer.close();
+
+        Log.d("StorageExample", "File written to: " + file.getAbsolutePath());
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+// 读取文件
+public void read() {
+    String filename = "Komeiji";
+    try {
+        // 获取文件路径
+        File file = new File(getExternalFilesDir(null), filename);
+
+        if (file.exists()) {
+            // 读取文件内容
+            FileReader reader = new FileReader(file);
+            BufferedReader bufferedReader = new BufferedReader(reader);
+            StringBuilder content = new StringBuilder();
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                content.append(line).append("\n");
+            }
+            bufferedReader.close();
+            Log.d("content", content.toString());
+        } else {
+            Log.e("content", "File does not exist!");
+        }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}
+
+```
+
+![[Pasted image 20241224143109.png]]
+
+
+**任意存储区域**
+*待续*
 
 
