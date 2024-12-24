@@ -4174,3 +4174,137 @@ public void read() {
 
 这个类似于Windows中的ini文件
 
+![[Pasted image 20241224202525.png|1050]]
+
+```java
+package com.learn;
+
+import android.os.Bundle;
+
+import android.widget.Button;
+import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.SharedPreferences;
+
+import android.widget.EditText;
+import android.widget.TextView;
+
+
+public class MainActivity extends AppCompatActivity {
+
+    private EditText editTextUsername;
+    private Button buttonSave, buttonLoad;
+    private TextView textViewDisplay;
+
+    // SharedPreferences 文件名和键名
+    private static final String PREFS_NAME = "UserPrefs";
+    private static final String KEY_USERNAME = "username";
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // 初始化 UI 元素
+        editTextUsername = findViewById(R.id.editTextUsername);
+        buttonSave = findViewById(R.id.buttonSave);
+        buttonLoad = findViewById(R.id.buttonLoad);
+        textViewDisplay = findViewById(R.id.textViewDisplay);
+
+        // 保存按钮的点击事件
+        buttonSave.setOnClickListener(v -> saveUsername());
+
+        // 加载按钮的点击事件
+        buttonLoad.setOnClickListener(v -> loadUsername());
+    }
+
+    // 保存用户名到 SharedPreferences
+    private void saveUsername() {
+        String username = editTextUsername.getText().toString();
+
+        if (username.isEmpty()) {
+            Toast.makeText(this, "请输入用户名", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // 获取 SharedPreferences 实例并存储数据
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString(KEY_USERNAME, username);
+        editor.apply(); // 异步保存数据
+
+        Toast.makeText(this, "用户名已保存", Toast.LENGTH_SHORT).show();
+    }
+
+    // 从 SharedPreferences 加载用户名
+    private void loadUsername() {
+        // 获取 SharedPreferences 实例并读取数据
+        SharedPreferences sharedPreferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+        String username = sharedPreferences.getString(KEY_USERNAME, "尚未保存用户名");
+
+        // 显示用户名
+        textViewDisplay.setText(username);
+    }
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+    <EditText
+            android:id="@+id/editTextUsername"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入用户名"
+            android:inputType="text" />
+
+    <Button
+            android:id="@+id/buttonSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="保存用户名" />
+
+    <Button
+            android:id="@+id/buttonLoad"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="加载用户名" />
+
+    <TextView
+            android:id="@+id/textViewDisplay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingTop="16dp"
+            android:text="用户名将显示在这里"
+            android:textSize="18sp" />
+
+</LinearLayout>
+
+```
+
+
+
+可以读取其他应用的SharedPreferences，不过这个已经成为了历史
+
+![[Pasted image 20241224203435.png|1000]]
+
+
+
+---
+
+## SQLite
+
+轻量又流行的嵌入式数据库，支持标准sql语言
+
+### 基础
+
+
+
+### 高级
