@@ -4424,7 +4424,170 @@ private void up() {
 **查询数据**
 
 ```java
+public Cursor query(String table, String[] columns, String selection,String[] 
+selectionArgs, String groupBy, String having, String orderBy) 
+```
+
+| **table**         | 表名                |
+| ----------------- | ----------------- |
+| **columns**       | 指定要查询的列，如果为空，返回所有 |
+| **selection**     | 查询条件 ，可以用占位符？     |
+| **selectionArgs** | where对应的条件值       |
+| **groupBy**       | 指定分组方式            |
+| **having**        | 指定having条件        |
+| **orderBy**       | 排序方式              |
+```java
+private void query() {
+    DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+    // 创建游标对象
+    Cursor cursor = db.query("user", new String[]{"id", "username", "age"}, "username=?", new String[]{"test"}, null, null, null);
+    // 利用游标遍历所有数据对象
+    while (cursor.moveToNext()) {
+        String id = cursor.getString(cursor.getColumnIndex("id"));
+        String username = cursor.getString(cursor.getColumnIndex("username"));
+        int age = cursor.getInt(cursor.getColumnIndex("age"));
+        Log.i("Mainactivity", "result: id=" + id + " username: " + username + "  age:" + age);
+    }
+    // 关闭游标，释放资源
+    cursor.close();
+
+}
+```
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+
+    <Button
+            android:id="@+id/add"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="添加" />
+
+    <Button
+            android:id="@+id/del"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="删除" />
+
+    <Button
+            android:id="@+id/up"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="更新" />
+
+    <Button
+            android:id="@+id/query"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="查询" />
+
+</LinearLayout>
 
 ```
 
+```java
+package com.learn;
+
+import android.content.ContentValues;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.os.Bundle;
+
+import android.util.Log;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+
+public class MainActivity extends AppCompatActivity {
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Button buttonAdd = findViewById(R.id.add);
+        Button buttonDel = findViewById(R.id.del);
+        Button buttonUp = findViewById(R.id.up);
+        Button buttonQuery = findViewById(R.id.query);
+        buttonAdd.setOnClickListener(v -> inser());
+        buttonDel.setOnClickListener(v -> del());
+        buttonUp.setOnClickListener(v -> up());
+        buttonQuery.setOnClickListener(v -> query());
+    }
+
+    private void query() {
+        DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // 创建游标对象
+        Cursor cursor = db.query("user", new String[]{"id", "username", "age"}, "username=?", new String[]{"test"}, null, null, null);
+        // 利用游标遍历所有数据对象
+        while (cursor.moveToNext()) {
+            String id = cursor.getString(cursor.getColumnIndex("id"));
+            String username = cursor.getString(cursor.getColumnIndex("username"));
+            int age = cursor.getInt(cursor.getColumnIndex("age"));
+            Log.i("Mainactivity", "result: id=" + id + " username: " + username + "  age:" + age);
+        }
+        // 关闭游标，释放资源
+        cursor.close();
+
+    }
+
+    private void inser() {
+        DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        // 创建存放数据的ContentValues对象
+        ContentValues values = new ContentValues();
+        values.put("username", "test");
+        values.put("password", "123456");
+        values.put("age", 20);
+        // 数据库执行插入命令
+        db.insert("user", null, values);
+
+    }
+
+    private void del() {
+        DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        db.delete("user", "username=?", new String[]{"test"});
+    }
+
+    private void up() {
+        DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        ContentValues values = new ContentValues();
+        values.put("age", 21);
+        db.update("user", values, "username=?", new String[]{"test"});
+    }
+}
+```
+
+> 当然，所有这些操作都可以使用sql语句完成，不必使用封装好的
+
+
+*如何快速查看数据库？*
+Android Studio的视图中有`App Inspection`
+![[Pasted image 20241224212339.png]]
+
+
 ### 高级
+
+*待续*
+
+---
+---
+
+# 网络编程
+
+---
+---
+
+# 传感器
