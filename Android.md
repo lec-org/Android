@@ -3854,41 +3854,86 @@ public class MainActivity extends AppCompatActivity {
 
 ## 文件存储
 
-直接把数据写在手机的外存中
+ 文件存储是Android中最基本的一种数据存储方式，它**不对**存储的**内容进行**任何的**格式化处理**，所有**数据都是原封不动**地保存到文件当中的，因而它比较适合用于**存储一些简单的文本数据或二进制数据**。
 
+**访问方法**：
+(数据与缓存)
+- 内部存储(Internal Storage)，
+    
+    - getFilesDir()
+        
+    - getCacheDir()
+        
+- 外部存储(External Storage)
+    
+    - getExternalFilesDir()
+        
+    - getExternalCacheDir()
+        
 
+> 注意：**卸载应用**时，所有目录下的**文件将被移除**。并且**其他应用无法访问**这些专属文件。
+
+### 内部存储
+
+对于内部存储，Android提供了一个简化的方法，Context类中的`openFileOutput()`
+
+这个方法接受两个参数：
+
+- **第一个参数是文件名**，在文本创建的时候使用的就是这个名称，注意这里指定的文件名不可以包含路径（因为默认存储到`/data/data/<packagename>/files/`目录下）。
+- 第二个参数是**文件的操作模式**
 ![[Pasted image 20241224111646.png]]
+
+Context对象也有一些方法可以访问目录
+```java
+public void load() {
+    // From internal storage, getFilesDir() or getCacheDir()
+    File filesDir = getFilesDir();// 持久文件目录
+    // FilesDir：/data/user/0/com.learn/files
+    Log.e("File", "FilesDir：" + filesDir.getAbsolutePath());
+    File cacheDir = getCacheDir();// 缓存文件目录
+    // CacheDir：/data/user/0/com.learn/cache
+    Log.e("File", "CacheDir：" + cacheDir.getAbsolutePath());
+}
+```
 
 ![[Pasted image 20241224111653.png]]
 
 
-文件流模式
+
+根据上面所说，调用 `openFileOutput()` 来获取 `FileOutputStream`，得到这个对象后就可以使用Java流的方式将数据写入到文件中
 ```java
 public void save() {
-    try {
-        FileOutputStream outStream = this.openFileOutput("a.txt", Context.MODE_APPEND);
-
-        outStream.write("Hello World".getBytes());
-
-        outStream.close();
-
-        Toast.makeText(this, "Saved", Toast.LENGTH_LONG).show();
-
-    } catch (FileNotFoundException e) {
-
+    // 文件名
+    String filename = "Reimu";
+    // 写入内容
+    String fileContents = "Hello Marisa";
+    // 内容不能为空
+    if (fileContents.isEmpty()) {
+        Log.e("File", "FileContents.isEmpty()");
         return;
-
-    } catch (IOException e) {
-
-        return;
-
     }
-
+    BufferedWriter writer = null;
+    try {
+        // 获取FileOutputStream对象
+        FileOutputStream fos = openFileOutput(filename, Context.MODE_PRIVATE);
+        // 通过OutputStreamWriter构建出一个BufferedWriter对象
+        writer = new BufferedWriter(new OutputStreamWriter(fos));
+        // 通过BufferedWriter对象将文本内容写入到文件中
+        writer.write(fileContents);
+    } catch (IOException e) {
+        Log.e("File", e.getMessage());
+    } finally {
+        try {
+            // 不管是否抛异常，都手动关闭输入流
+            if (writer != null) writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 ```
 
-openFileOutput()方法的第一参数用于指定文件名称，不能包含路径分隔符“/” ，如果文件不存在，Android 会自动创建它
+> **NOTE：**
+> 如何在Android Studio中查看写入的文件？
 
-创建的文件保存在`/data/data/<包>/files/xx` 中
-> 这是一个系统根目录，如果没有root权限，其他程序（包括用户）无权限查看，只有应用本身能操作
-
+在IDE的工具栏的`视图`中点击`工具窗口`
