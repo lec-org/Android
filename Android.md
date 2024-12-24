@@ -3849,4 +3849,16 @@ public class MainActivity extends AppCompatActivity {
 
 # 数据存储与访问
 
-经典持久层内容，在
+持久层内容
+
+## 文件存储
+
+直接把数据写在手机的外存中
+
+
+![[Pasted image 20241224111646.png]]
+
+![[Pasted image 20241224111653.png]]
+
+
+文件流模式
