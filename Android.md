@@ -239,6 +239,7 @@ android:theme="@style/AppTheme">
 
 
 ---
+---
 
 ## 杂类知识
 
@@ -1878,6 +1879,8 @@ public class MainActivity extends AppCompatActivity {
 *待续*
 
 ---
+---
+
 
 # 事件处理
 
@@ -2282,6 +2285,7 @@ public void MyClick(View v) {
 
 *待续*
 
+---
 ---
 
 # 四大组件
@@ -3744,7 +3748,6 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
 #### 发送广播
 
-需要提前定义一个接收器
 
 ![[Pasted image 20241224082559.png|650]]
 
@@ -3753,5 +3756,97 @@ public class BootCompleteReceiver extends BroadcastReceiver {
 
 `MyBroadcastReceiver`
 ```java
+package com.learn;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.util.Log;
+import android.widget.Toast;
+
+public class MyBroadcastReceiver extends BroadcastReceiver {
+    private final String ACTION_BOOT = "com.learn.MY_BROADCAST";
+
+    @Override
+    public void onReceive(Context context, Intent intent) {
+        if (intent.getAction().equals(ACTION_BOOT)) {
+            Toast.makeText(context, "收到", Toast.LENGTH_LONG).show();
+            Log.d("kmj", "onReceive: 收到广播");
+        }
+    }
+}
 ```
+
+在接收方注册
+```xml
+<receiver
+        android:name=".MyBroadcastReceiver"
+        android:exported="true">
+    <intent-filter>
+        <action android:name="com.learn.MY_BROADCAST" />
+    </intent-filter>
+</receiver>
+```
+
+任意程序作为发送方
+```java
+package com.learn;
+
+import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Button;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+
+public class MainActivity extends AppCompatActivity {
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        Button btn = findViewById(R.id.button);
+
+        btn.setOnClickListener(v -> sendBroadcast(new Intent("com.learn.MY_BROADCAST")));
+    }
+}
+```
+
+> **NOTE：**
+> 在安卓8之后，自定义广播添加了限制，需要用一些方法才能接收和发送
+> https://blog.csdn.net/kongqwesd12/article/details/78998151
+
+
+
+**有序广播**
+*待续*
+
+
+---
+
+### 本地广播
+
+*待续*
+
+---
+
+
+
+## ContentProvider
+
+*待续*
+
+---
+
+## Intent
+
+*待续*
+
+
+---
+---
+
+
+# 数据存储与访问
+
+经典持久层内容，在
