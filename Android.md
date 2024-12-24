@@ -3899,6 +3899,19 @@ public void load() {
 ![[Pasted image 20241224111653.png]]
 
 
+文件流形式，为了快速理解，可以回顾一下java的快读与快写
+```java
+import java.io.*;
+
+// 快速读入
+BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+
+// 快速输出
+PrintWriter out = new PrintWriter(new BufferedWriter(new OutputStreamWriter(System.out)));
+
+```
+
+**写入文件**
 
 根据上面所说，调用 `openFileOutput()` 来获取 `FileOutputStream`，得到这个对象后就可以使用Java流的方式将数据写入到文件中
 ```java
@@ -3936,4 +3949,51 @@ public void save() {
 > **NOTE：**
 > 如何在Android Studio中查看写入的文件？
 
-在IDE的工具栏的`视图`中点击`工具窗口`
+在IDE的工具栏的`视图`中点击`工具窗口`，选择`设备资源管理器`后找到相应的文件夹即可
+![[Pasted image 20241224133918.png]]
+
+
+**读取文件**
+
+```java
+// 读取文件
+public void read() {
+    Log.e("File", "read.start");
+    String filename = "Reimu";
+    BufferedReader reader = null;
+    try {
+        // 获取FileInputStream对象
+        FileInputStream fis = openFileInput(filename);
+        // 通过InputStreamReader构建出一个BufferedReader对象
+        reader = new BufferedReader(new InputStreamReader(fis));
+        StringBuilder sb = new StringBuilder();
+        String line = "";
+        // 一行一行的读取，当数据为空时结束循环
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);// 将数据添加到StringBuilder
+            sb.append("\n");
+        }
+        Log.e("File", sb.toString());
+    } catch (IOException e) {
+        Log.e("File", e.getMessage());
+    } finally {
+        Log.e("File", "read.finally");
+        try {
+            if (reader != null) reader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
+```
+
+
+
+**查看文件列表**
+*待续*
+
+**删除文件**
+*待续*
+
+
+
