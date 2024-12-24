@@ -4305,6 +4305,126 @@ public class MainActivity extends AppCompatActivity {
 
 ### 基础
 
+Android提供了一个`SQLiteOpenHelper`类，用于对数据库进行创建和升级  
+`SQLiteOpenHelper`是一个抽象类，使用时需要创建自己的类去继承它。  
+`SQLiteOpenHelper`有两个**抽象方法**`onCreate()`和`onUpgrade()`，必须在自己的类中重写这两个方法，然后分别在这两个方法中实现`创建`和`更新`数据库的逻辑。
 
+```java
+package com.learn;
+
+import android.content.Context;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+import androidx.annotation.Nullable;
+
+public class DB extends SQLiteOpenHelper {
+    public DB(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {
+        super(context, name, factory, version);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // 创建数据库sql语句并执行
+        String sql = "create table user(id integer primary key autoincrement,username varchar(20),password varchar(20),age integer)";
+        db.execSQL(sql);
+
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+
+    }
+}
+
+```
+
+同时这个`SQLiteOpenHelper`中有两个实例方法：`getReadableDatabase()`和 `getWritableDatabase()` 打开（创建）一个数据库
+
+当数据库只读时：
+`getReadableDatabase()`方法返回的对象将以只读的方式去打开数据库  
+`getWritableDatabase()`方法则将出现异常
+
+
+**增加数据**
+
+```java
+public long insert(String table, String nullColumnHack, ContentValues values) ;
+```
+
+方法参数:
+
+| **table**          | 表名                                                    |
+| ------------------ | ----------------------------------------------------- |
+| **nullColumnHack** | 可选参数，当values参数为空时，指定哪个字段设置为null,如果values不为空，则该参数值可以为空 |
+| **values**         | 指定具体的字段，相当于map集合，键值对的形式存储                             |
+| **返回值**            | 返回插入成功的行数，如果为-1表示失败                                   |
+
+```java
+private void inser() {
+    DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+    // 创建存放数据的ContentValues对象
+    ContentValues values = new ContentValues();
+    values.put("username", "test");
+    values.put("password", "123456");
+    values.put("age", 20);
+    // 数据库执行插入命令
+    db.insert("user", null, values);
+
+}
+```
+
+
+**删除数据**
+
+```java
+public int delete(String table, String whereClause, String[] whereArgs) 
+```
+
+| **table**       | 表名                         |
+| --------------- | -------------------------- |
+| **whereClause** | 查询条件                       |
+| **whereClause** | 指定条件语句，可以使用占位符？            |
+| **whereArgs**   | 当表达式中含有占位符，该参数用户指定各占位符参数的值 |
+| **返回值**         | 删除成功的行数                    |
+
+```java
+private void del() {
+    DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+    db.delete("user", "username=?", new String[]{"test"});
+}
+```
+
+
+**更新数据**
+
+```java
+public int update(String table, ContentValues values, String whereClause, String[] whereArgs) 
+```
+
+| **table**       | 表名                         |
+| --------------- | -------------------------- |
+| **values**      | 指定要更新的字段及对应的字段值            |
+| **whereClause** | 指定条件语句，可以使用占位符？            |
+| **whereArgs**   | 当表达式中含有占位符，该参数用户指定各占位符参数的值 |
+| **返回值**         | 返回影响的数据条数                  |
+```java
+private void up() {
+    DB dbHelper = new DB(MainActivity.this, "users.db", null, 1);
+    SQLiteDatabase db = dbHelper.getWritableDatabase();
+    ContentValues values = new ContentValues();
+    values.put("age", 21);
+    db.update("user", values, "username=?", new String[]{"test"});
+}
+```
+
+
+**查询数据**
+
+```java
+
+```
 
 ### 高级
