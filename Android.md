@@ -1077,6 +1077,7 @@ https://developer.android.google.cn/studio/debug/layout-inspector?hl=zh-cn
 >RatingBar(星级评分条)
 >ScrollView(滚动条)
 >Date & Time组件
+>**WebView(网页显示)**
 
 ### 进度条
 
@@ -4697,8 +4698,25 @@ Android提供了一个网络的请求方法`HttpURLConnection`，只能完成一
 
 ```
 
+写一个用来网络访问Url的方法
+```java
+public String getHtml(String src) {
+    StringBuilder sb = new StringBuilder();
+    try {
+        // 由于只是获取html内容，这里直接获取Url流
+        BufferedReader br = new BufferedReader(new InputStreamReader(new URL(src).openStream()));
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
+    } catch (Exception e) {
+        return "error: " + e;
+    }
+}
+```
 
-
+也可以用网络的请求方法`HttpURLConnection`来获取流，好处是可以自定义各种
 
 ---
 ---
