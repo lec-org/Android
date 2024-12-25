@@ -4609,6 +4609,19 @@ http状态码：
 # 初级应用
 
 
+Android提供了一个网络的请求方法`HttpURLConnection`，只能完成一些比较简单的操作
+
+使用步骤：
+- 创建一个URL对象： `URL url = new URL(http://www.baidu.com/);`
+- 调用URL对象的openConnection()来获取HttpURLConnection对象实例： `HttpURLConnection conn = (HttpURLConnection) url.openConnection();`
+- 设置HTTP请求使用的方法:GET或者POST，或者其他请求方式比如：PUT `conn.setRequestMethod("GET");`
+- 设置连接超时，读取超时的毫秒数，以及服务器希望得到的一些消息头 ` conn.setConnectTimeout(6*1000)`
+- 调用getInputStream()方法获得服务器返回的输入流，然后输入流进行读取了 `InputStream in = conn.getInputStream();`
+- 最后调用disconnect()方法将HTTP连接关掉 `conn.disconnect();`
+
+其他：
+- 对响应码进行判断： `if(conn.getResponseCode() != 200)`
+- 直接访问界面，读取流： `final InputStream in = new URL("url").openStream();`
 
 
 ---
