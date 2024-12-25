@@ -4617,6 +4617,11 @@ http状态码：
 - 500：Internal Server Error，服务器发生不可预期的错误
 - 503：Server Unavailable，服务器
 
+声明权限
+```xml
+<uses-permission android:name="android.permission.INTERNET" />
+```
+
 ---
 
 ## Socket
@@ -4760,19 +4765,22 @@ StrictMode.setThreadPolicy(policy);
 
 注意：**在网络阻塞的时候，这可能会导致整个程序（主线程）阻塞，最终ANR（应用程序未响应）**
 
-因此，网络操作应该在子线程中进行，同时Android**不允许子线程直接修改UI组件**，需要用`Hander`等作为桥梁
+因此，**网络操作应该在子线程中进行**，同时Android**不允许子线程直接修改UI组件**，需要用`Hander`等作为桥梁
 
 两个按钮的监听事件：
 ```java
+Handler hd = new Handler(Looper.getMainLooper());
+
 btn1.setOnClickListener(v -> {
         new Thread(new Runnable() {
             @Override
             public void run() {
+                String res = getHtml(ed.getText().toString().trim());
                 hd.post(new Runnable() {
                     @Override
                     public void run() {
                         webView.setVisibility(View.GONE);
-                        tx.setText(getHtml(ed.getText().toString().trim()));
+                        tx.setText(res);
                     }
                 });
             }
@@ -4796,6 +4804,92 @@ btn1.setOnClickListener(v -> {
     });
 }
 ```
+
+同样的，这里实现的所有函数式接口都能用lambda表达式简化
+总体代码：
+```java
+package com.learn;
+
+import android.os.Bundle;
+
+
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.webkit.WebView;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+
+public class MainActivity extends AppCompatActivity {
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        Handler hd = new Handler(Looper.getMainLooper());
+
+        EditText ed = findViewById(R.id.html);
+        Button btn1 = findViewById(R.id.get_html);
+        Button btn2 = findViewById(R.id.show_page);
+        TextView tx = findViewById(R.id.text);
+        WebView webView = findViewById(R.id.webview);
+
+        btn1.setOnClickListener(v -> new Thread(() -> {
+            String res = getHtml(ed.getText().toString().trim());
+            hd.post(() -> {
+                webView.setVisibility(View.GONE);
+                tx.setText(res);
+            });
+        }).start());
+
+        btn2.setOnClickListener(v -> new Thread(() -> hd.post(() -> {
+            tx.setText("");
+            webView.setVisibility(View.VISIBLE);
+            webView.loadUrl(ed.getText().toString().trim());
+        })).start());
+    }
+
+    public String getHtml(String src) {
+        StringBuilder sb = new StringBuilder();
+        try {
+            BufferedReader br = new BufferedReader(new InputStreamReader(new URL(src).openStream()));
+            String line;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
+            }
+            return sb.toString();
+        } catch (Exception e) {
+            Log.e("kmg", e.toString());
+            return "error: " + e;
+        }
+    }
+}
+```
+
+![[Pasted image 20241225172746.png]]
+
+![[Pasted image 20241225173021.png]]
+
+
+
+**学校实验内容：**
+*图片查看器*
+
+使用`BitMap`类，给`ImageView`设置背景
+
+
+
+
 
 ---
 ---
