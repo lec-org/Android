@@ -1903,9 +1903,10 @@ public class MainActivity extends AppCompatActivity {
 - 对事件对象进行`判断`，`执行对应的事件的处理方法`
 
 对于事件监听，有五种实现方式、
+
+
 *举例，点击一个按钮，弹出一个`Toast`*
 直接使用拖动方式创建一个带按钮的布局即可，id设置成`btn0`
-
 
 ### 直接使用匿名内部类
 
@@ -4586,6 +4587,10 @@ Android Studio的视图中有`App Inspection`
 ---
 
 # 网络编程
+
+
+
+
 
 ---
 ---
