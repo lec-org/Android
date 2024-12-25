@@ -2326,6 +2326,7 @@ activity、service、content provider、broadcast receiver
 
 https://developer.android.google.cn/guide/components/activities/activity-lifecycle?hl=zh-cn
 
+
 **创建阶段**
 - **`onCreate()`**：这是 Activity 生命周期的第一个方法。在 Activity 被创建时，系统会调用此方法。通常在此方法中进行初始化操作，例如设置视图、绑定数据等。
 - **`onStart()`**：`onCreate()` 后调用，表示 Activity 已经对用户可见，但还没有处于前台与用户交互的状态。这个方法通常用于恢复在 `onPause()` 时保存的资源或数据。
@@ -2340,6 +2341,16 @@ https://developer.android.google.cn/guide/components/activities/activity-lifecyc
 **销毁阶段**
 - **`onRestart()`**：当 Activity 从停止状态恢复并重新变为可见时，系统会调用此方法。这个方法通常在 `onStop()` 和 `onStart()` 之间调用，用于恢复一些资源或者状态。
 - **`onDestroy()`**：当 Activity 被销毁时，系统会调用此方法。此时可以清理 Activity 使用的所有资源，进行内存释放等操作。通常用于释放长时间占用的资源、停止后台线程等。
+
+
+**Activity有四种状态**
+
+| **状态**               | **描述**                                           | **特点**                                                | **常见回调方法**    |
+| -------------------- | ------------------------------------------------ | ----------------------------------------------------- | ------------- |
+| **运行状态 (Running)**   | Activity 正在前台运行，用户可见且可以与用户交互。                    | - 处于最前端，优先级最高  <br>- 未暂停或停止。                          | `onResume()`  |
+| **暂停状态 (Paused)**    | Activity 部分可见，但失去焦点（例如有透明或半透明的 Activity 显示在其上方）。 | - 仍保持活动，可能会被系统回收资源  <br>- 用户不能与之交互。                   | `onPause()`   |
+| **停止状态 (Stopped)**   | Activity 不可见，但未销毁（例如被另一个 Activity 完全覆盖）。         | - 保持实例和所有状态信息，但可能被系统回收  <br>- 如果需要再次显示，可能直接恢复而非重新创建。  | `onStop()`    |
+| **销毁状态 (Destroyed)** | Activity 被销毁，释放了所有资源。                            | - 系统或用户主动关闭 Activity  <br>- 可能因配置更改（如屏幕旋转）或系统资源不足被销毁。 | `onDestroy()` |
 
 
 #### 创建流程
@@ -4806,6 +4817,7 @@ btn1.setOnClickListener(v -> {
 ```
 
 同样的，这里实现的所有函数式接口都能用lambda表达式简化
+
 总体代码：
 ```java
 package com.learn;
@@ -4888,9 +4900,154 @@ public class MainActivity extends AppCompatActivity {
 使用`BitMap`类，给`ImageView`设置背景
 
 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".MainActivity">
+
+    <EditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入图片URL"
+            android:inputType="textUri" />
+
+    <Button
+            android:id="@+id/loadimage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="加载图片" />
+
+    <!--android:adjustViewBounds="true" 图片适应-->
+    <ImageView
+            android:id="@+id/imageview"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true" />
+
+    <TextView
+            android:id="@+id/status"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:paddingTop="20dp"
+            android:gravity="center_horizontal" />
+
+</LinearLayout>
+
+```
+
+逻辑代码：
+```java
+package com.learn;
+
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Bundle;
 
 
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+
+
+public class MainActivity extends AppCompatActivity {
+    private final Handler hd = new Handler(Looper.getMainLooper());
+    private EditText ed;
+    private Button btn;
+    private TextView tx;
+    private ImageView iv;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        ed = findViewById(R.id.url);
+        btn = findViewById(R.id.loadimage);
+        tx = findViewById(R.id.status);
+        iv = findViewById(R.id.imageview);
+
+        btn.setOnClickListener(v -> {
+            String src = ed.getText().toString().trim();
+            if (src.isEmpty()) {
+                tx.setText("请输入网址");
+                tx.setVisibility(View.VISIBLE);
+                iv.setVisibility(View.GONE);
+                return;
+            }
+            new Thread(() -> {
+                try {
+                    Bitmap bitmap = loadImage(src);
+                    if (bitmap != null) {
+                        hd.post(() -> {
+                            iv.setVisibility(View.VISIBLE);
+                            iv.setImageBitmap(bitmap);
+                            tx.setVisibility(View.GONE);
+                        });
+                    } else {
+                        setErrorText(null);
+                    }
+
+                } catch (Exception e) {
+                    setErrorText(e);
+                }
+            }).start();
+        });
+    }
+
+    // 加载图片失败时，设置text同时让图片框消失
+    private void setErrorText(Throwable e) {
+        hd.post(() -> {
+            if (e == null) {
+                tx.setText("加载失败");
+            } else {
+                tx.setText("加载失败\n" + e);
+            }
+            tx.setVisibility(View.VISIBLE);
+            iv.setVisibility(View.GONE);
+        });
+    }
+
+
+    private Bitmap loadImage(String src) {
+        HttpURLConnection coon = null;
+        try {
+            URL url = new URL(src);
+            coon = (HttpURLConnection) url.openConnection();
+            coon.setRequestMethod("GET");
+            coon.setConnectTimeout(5000);
+            var rescode = coon.getResponseCode();
+            if (rescode == HttpURLConnection.HTTP_OK)
+                return BitmapFactory.decodeStream(coon.getInputStream());
+            else throw new Exception(String.valueOf(rescode));
+        } catch (Exception e) {
+            Log.e("kmg", e.toString());
+            return null;
+        } finally {
+            if (coon != null)
+                coon.disconnect();
+        }
+    }
+}
+```
+
+![[Pasted image 20241225203725.png]]
 
 
 ---
