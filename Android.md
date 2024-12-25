@@ -4631,6 +4631,73 @@ Android提供了一个网络的请求方法`HttpURLConnection`，只能完成一
 **学校实验内容**
 *获取网页html数据、显示网页*
 
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<android.widget.RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".MainActivity">
+
+    <!-- EditText 用于输入路径或 URL -->
+    <EditText
+            android:id="@+id/html"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="请输入路径或URL"
+            android:inputType="textUri"
+            android:padding="16dp"
+            android:layout_marginTop="32dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
+    <!-- 按钮1：获取HTML代码 -->
+    <Button
+            android:id="@+id/get_html"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="获取HTML代码"
+            android:layout_below="@id/html"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="16dp" />
+
+    <!-- 按钮2：可视化网页内容 -->
+    <Button
+            android:id="@+id/show_page"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="显示网页内容"
+            android:layout_below="@id/html"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp" />
+
+    <!-- TextView 用于显示 HTML 内容或错误信息 -->
+    <TextView
+            android:id="@+id/text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp"
+            android:scrollbars="vertical"
+            android:text="在此显示返回的HTML内容"
+            android:layout_below="@id/get_html"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="16dp" />
+
+    <!-- WebView 用于可视化网页内容 -->
+    <WebView
+            android:id="@+id/webview"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/text"
+            android:layout_alignParentBottom="true" />
+
+</android.widget.RelativeLayout>
+
+```
+
+
 
 
 ---
