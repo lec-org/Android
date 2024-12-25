@@ -2271,6 +2271,18 @@ public void MyClick(View v) {
 
 ## 多线程
 
+| 分类   | 对应方法              | 推荐程度     | 特点/备注                     |
+| ---- | ----------------- | -------- | ------------------------- |
+| 基础使用 | 继承 Thread         | 一般       | 不灵活，需手动管理线程。              |
+|      | 实现 Runnable       | 较推荐      | 比继承 Thread 更灵活。           |
+|      | Handler           | 推荐       | 用于线程间通信，常用于主线程更新 UI。      |
+| 复合使用 | AsyncTask         | 不推荐（已过时） | 简化异步任务，但生命周期管理差。          |
+|      | HandlerThread     | 推荐       | 适合长时间运行的单任务线程。            |
+|      | IntentService     | 不推荐（已过时） | 自动管理任务，现被 WorkManager 取代。 |
+| 高级使用 | 线程池（ThreadPool）   | 推荐       | 适合高并发场景，管理线程更高效。          |
+|      | RxJava            | 推荐       | 响应式编程，适合复杂任务链。            |
+|      | Kotlin Coroutines | 强烈推荐     | 现代化、简洁、功能强大，未来趋势。         |
+
 ### 基础使用
 
 - 继承Thread类
@@ -4716,7 +4728,74 @@ public String getHtml(String src) {
 }
 ```
 
-也可以用网络的请求方法`HttpURLConnection`来获取流，好处是可以自定义各种
+也可以用网络的请求方法`HttpURLConnection`来获取流，好处是可以自定义各种请求方法和其他配置
+```java
+public String getHtml(String src) {
+    StringBuilder sb = new StringBuilder();
+    try {
+        URL url = new URL(src);
+        HttpURLConnection coon = (HttpURLConnection) url.openConnection();
+        coon.setRequestMethod("GET");
+        coon.setConnectTimeout(5000);
+        BufferedReader br = new BufferedReader(new InputStreamReader(coon.getInputStream()));
+        String line;
+        while ((line = br.readLine()) != null) {
+            sb.append(line);
+        }
+        return sb.toString();
+    } catch (Exception e) {
+        return "error: " + e;
+    }
+}
+```
+
+之后我们只要完成，点击第一个按钮，在下面的文本控件设置对应的网页html，点击第二个按钮，让webview控件展示对应的网页即可。
+但是值得注意的是，Android在API9以后**不允许在主线程上执行网络操作**，要想在调试阶段启用主线程上的网络访问，则需要
+```java
+// 设置线程策略，调用 permitAll() 方法表示允许在主线程中进行所有操作（包括网络请求、文件读写等）
+// 将配置的线程策略 policy 应用到当前线程
+StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+StrictMode.setThreadPolicy(policy);
+```
+
+注意：**在网络阻塞的时候，这可能会导致整个程序（主线程）阻塞，最终ANR（应用程序未响应）**
+
+因此，网络操作应该在子线程中进行，同时Android**不允许子线程直接修改UI组件**，需要用`Hander`等作为桥梁
+
+两个按钮的监听事件：
+```java
+btn1.setOnClickListener(v -> {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        webView.setVisibility(View.GONE);
+                        tx.setText(getHtml(ed.getText().toString().trim()));
+                    }
+                });
+            }
+        }).start();
+    });
+
+    btn2.setOnClickListener(v -> {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                hd.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        tx.setText("");
+                        webView.setVisibility(View.VISIBLE);
+                        webView.loadUrl(ed.getText().toString().trim());
+                    }
+                });
+            }
+        }).start();
+    });
+}
+```
 
 ---
 ---
