@@ -4606,7 +4606,11 @@ http状态码：
 
 ---
 
-# 初级应用
+## Socket
+
+*待续*
+
+## 初级应用
 
 
 Android提供了一个网络的请求方法`HttpURLConnection`，只能完成一些比较简单的操作
@@ -4622,6 +4626,11 @@ Android提供了一个网络的请求方法`HttpURLConnection`，只能完成一
 其他：
 - 对响应码进行判断： `if(conn.getResponseCode() != 200)`
 - 直接访问界面，读取流： `final InputStream in = new URL("url").openStream();`
+
+
+**学校实验内容**
+*获取网页html数据、显示网页*
+
 
 
 ---
