@@ -5068,6 +5068,74 @@ public class MainActivity extends AppCompatActivity {
 
 # 传感器
 
+主要是位置
+
+## GPS
+
+**学校实验内容**
+
+![[Pasted image 20241226095037.png]]
 
 
+谷歌提供了一个获取位置的API `FusedLocationProviderClient`。但是我们不用这个，因为他依赖于谷歌服务`Google Play`
 
+使用`LocationManager`管理位置，使用`LocationListener`实时监听并获取位置信息
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/mainLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp"
+        tools:context=".MainActivity">
+
+    <Button
+            android:id="@+id/btnStartStop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="开始运动" />
+
+    <TextView
+            android:id="@+id/tvDateTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="日期和时间："
+            android:textSize="16sp"
+            android:layout_marginTop="16dp"/>
+
+    <TextView
+            android:id="@+id/tvLatitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="纬度信息："
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+    <TextView
+            android:id="@+id/tvLongitude"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="经度信息："
+            android:textSize="16sp"
+            android:layout_marginTop="8dp"/>
+
+</LinearLayout>
+
+```
+
+```xml
+
+<!--声明精准位置权限与粗略位置权限-->
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+```
+
+在运行程序时候，应当首先检查是否正确获取了相关权限，否则可能会崩溃
+
+自定义权限检查与获取函数：
+```java
+
+```
