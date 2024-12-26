@@ -5137,5 +5137,355 @@ public class MainActivity extends AppCompatActivity {
 
 自定义权限检查与获取函数：
 ```java
+private boolean checkPermission() {
+        int perFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int perCoarse = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        return perFine == PackageManager.PERMISSION_GRANTED && perCoarse == PackageManager.PERMISSION_GRANTED;
+    }
 
+    /**
+     * PER_CODE 权限请求码，唯一标识本次请求
+     */
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, PER_CODE);
+    }
+
+    // 生成一个重写的onRequestPermissionsResult回调函数，用于处理权限请求结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // 遍历 grantResults，判断是否全部授权
+        if (requestCode == PER_CODE) {
+            boolean allYes = true;
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allYes = false;
+                    break;
+                }
+            }
+
+            if (allYes) {
+                Toast.makeText(this, "权限获取成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "需要精准位置权限才能使用该应用", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "权限获取失败");
+                btn.setEnabled(false);
+            }
+        }
+    }
+}
 ```
+
+关于位置的实时获取，具体实现流程如下：
+
+- 首先初始化 `LocationManager` 和 `LocationListener`，生成实现的`LocationListener`的所有方法
+- 接着调用`LocationManager`的方法，向系统请求持续的位置信息更新
+```java
+locationManager.requestLocationUpdates(
+    LocationManager.GPS_PROVIDER, // 位置提供器
+    1000,                         // 时间间隔（毫秒）
+    0,                            // 距离间隔（米）
+    locationListener              // 位置监听器
+);
+```
+
+- 此时`LocationListener`开始工作，自动实时更新位置数据，我们想要使用他获取的位置信息，只要使用一个`getLastKnownLocation`即可
+```java
+// 该方法会返回系统缓存的上一次位置更新时保存的位置信息。  
+// 它不会主动请求新的位置信息，而是使用已经存在的历史记录。  
+// 如果设备之前未启用定位服务，或者系统未缓存任何位置信息，则会返回 null。
+location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+```
+
+总体代码:
+```java
+package com.learn;
+
+import android.Manifest;
+import android.content.pm.PackageManager;
+
+import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationManager;
+import android.os.Bundle;
+
+
+import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+
+import android.widget.TextView;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+
+import java.io.File;
+import java.io.FileWriter;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+
+
+public class MainActivity extends AppCompatActivity {
+    private final Handler hd = new Handler(Looper.getMainLooper());
+    private Button btn;
+    private TextView tvd;
+    private TextView tv1;
+    private TextView tv2;
+    private TextView txerr;
+
+    private LocationManager locationManager;
+    private LocationListener locationListener;
+
+    private File dataFile;
+    private FileWriter fw;
+
+    private long startTime;
+
+    private boolean isRunning;
+
+    private final int PER_CODE = 6657;
+    private final String TAG = "kmj";
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        btn = findViewById(R.id.btn);
+        tvd = findViewById(R.id.tvd);
+        tv1 = findViewById(R.id.tvLatitude);
+        tv2 = findViewById(R.id.tvLongitude);
+        txerr = findViewById(R.id.txerr);
+
+        // 初始化 LocationManager 和 LocationListener
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+        // 实现所有方法
+        locationListener = new LocationListener() {
+            @Override
+            public void onLocationChanged(@NonNull Location location) {
+
+            }
+
+            @Override
+            public void onLocationChanged(@NonNull List<Location> locations) {
+                LocationListener.super.onLocationChanged(locations);
+            }
+
+            @Override
+            public void onFlushComplete(int requestCode) {
+                LocationListener.super.onFlushComplete(requestCode);
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status, Bundle extras) {
+                LocationListener.super.onStatusChanged(provider, status, extras);
+            }
+
+            @Override
+            public void onProviderEnabled(@NonNull String provider) {
+                LocationListener.super.onProviderEnabled(provider);
+            }
+
+            @Override
+            public void onProviderDisabled(@NonNull String provider) {
+                LocationListener.super.onProviderDisabled(provider);
+            }
+        };
+
+        btn.setOnClickListener(v -> {
+            handleStartStop();
+        });
+    }
+
+    // 处理开始和停止按钮的点击事件
+    private void handleStartStop() {
+        if (!isRunning) {
+            if (checkPermission()) {
+                startTracking();
+                Log.d(TAG, "权限获取成功");
+            } else {
+                requestPermission();
+            }
+        } else {
+            stopTracking();
+            Toast.makeText(this, "停止", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void startTracking() {
+        try {
+            // 写入文件，涉及到外部存储的知识点
+            String filename = "运动数据" + new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date()) + ".csv";
+            File src = getExternalFilesDir(null);
+            if (src == null) {
+                Toast.makeText(this, "无法获取存储权限", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "无法获取存储权限");
+                return;
+            }
+            dataFile = new File(getExternalFilesDir(null), filename);
+            fw = new FileWriter(dataFile);
+            // 写入表头
+            fw.append("时间,纬度,经度\n");
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "无法获取存储权限", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            // 启动监视器
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, locationListener);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "无位置权限", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        isRunning = true;
+        btn.setText("停止运动");
+        startTime = System.currentTimeMillis();
+
+        // 利用Handler执行runnable任务，在任务中每隔1秒重新调用自己，原理是把Runnable添加到消息队列中
+        Runnable runnable = new Runnable() {
+            @Override
+            public void run() {
+                if (isRunning) {
+                    updateData();
+                    Log.d(TAG, "run: oon");
+                    hd.postDelayed(this, 1000);
+                }
+            }
+        };
+        hd.post(runnable);
+
+    }
+
+    private void updateData() {
+        Location location = null;
+        try {
+            // 获取最近位置
+            location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
+        String currentDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        tvd.setText("日期和时间：" + currentDateTime);
+        if (location != null) {
+            double latitude = location.getLatitude();
+            double longitude = location.getLongitude();
+
+            tv1.setText("纬度信息：" + latitude);
+            tv2.setText("经度信息：" + longitude);
+            txerr.setVisibility(View.GONE);
+            try {
+                String dataLine = currentDateTime + "," + latitude + "," + longitude + "\n";
+                fw.append(dataLine);
+                // 刷新文件，保证文件写入存储
+                fw.flush();
+            } catch (Exception e) {
+                e.printStackTrace();
+                Log.e(TAG, "无法写入文件");
+                Toast.makeText(this, "无法写入文件", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            txerr.setVisibility(View.VISIBLE);
+            Log.e(TAG, "无法获取当前位置");
+        }
+    }
+
+    private void stopTracking() {
+        isRunning = false;
+
+        btn.setText("开始运动");
+
+        try {
+            locationManager.removeUpdates(locationListener);
+        } catch (SecurityException e) {
+            e.printStackTrace();
+        }
+
+        try {
+            if (fw != null) {
+                fw.flush();
+                fw.close();
+            }
+            Toast.makeText(this, "文件已保存到：" + dataFile.getAbsolutePath(), Toast.LENGTH_LONG).show();
+            Log.d(TAG, "stopTracking: " + dataFile.getAbsolutePath());
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(this, "无法写入文件", Toast.LENGTH_SHORT).show();
+        }
+
+        long totaltime = (System.currentTimeMillis() - startTime) / 1000;
+        tvd.setText("运行已结束");
+        tv1.setText("运动时长：" + totaltime + "秒");
+        tv2.setText("下次再见");
+    }
+
+    private boolean checkPermission() {
+        int perFine = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION);
+        int perCoarse = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION);
+        return perFine == PackageManager.PERMISSION_GRANTED && perCoarse == PackageManager.PERMISSION_GRANTED;
+    }
+
+    /**
+     * PER_CODE 权限请求码，唯一标识本次请求
+     */
+    private void requestPermission() {
+        ActivityCompat.requestPermissions(this,
+                new String[]{
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                }, PER_CODE);
+    }
+
+    // 生成一个重写的onRequestPermissionsResult回调函数，用于处理权限请求结果
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        // 遍历 grantResults，判断是否全部授权
+        if (requestCode == PER_CODE) {
+            boolean allYes = true;
+            for (int grantResult : grantResults) {
+                if (grantResult != PackageManager.PERMISSION_GRANTED) {
+                    allYes = false;
+                    break;
+                }
+            }
+
+            if (allYes) {
+                Toast.makeText(this, "权限获取成功", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "需要精准位置权限才能使用该应用", Toast.LENGTH_SHORT).show();
+                Log.e(TAG, "权限获取失败");
+                btn.setEnabled(false);
+            }
+        }
+    }
+}
+```
+
+*在虚拟机中测试*
+![[Pasted image 20241226175344.png]]
+
+这里可以设置虚拟位置，还可以设置虚拟路径
+
+**Android15依然可以使用，注意虚拟机镜像不要选择平板镜像，请选择手机镜像，平板模式有无法定位的BUG**
+
+
+*待续*
