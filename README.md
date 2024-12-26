@@ -130,5 +130,9 @@ git clone --recurse-submodules https://github.com/KomeijiReimu/Android.git
 **实验6.2（位置 + 文件存储）**（文档中传感器一栏）
 
 
-设计题要画流程图
+设计题要**统功能层次图(H 图)、软件部署架构图**
 
+
+![[Pasted image 20241226220840.png]]
+
+![[Pasted image 20241226220848.png]]
