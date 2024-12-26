@@ -271,6 +271,11 @@ android.util.Log常用的方法有以下5个：
     
 - 5、Log.e为红色，可以想到error错误，这里仅显示红色的错误信息，这些错误就需要我们认真的分析，查看栈的信息了。注意：不同的打印方法在使用时都是某个方法带上(String tag, String msg)参数，tag表示的是打印信息的标签，msg表示的是需要打印的信息。
 
+### 获取时间日期
+
+```java
+new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+```
 
 ---
 
@@ -5062,5 +5067,7 @@ public class MainActivity extends AppCompatActivity {
 ---
 
 # 传感器
+
+
 
 
