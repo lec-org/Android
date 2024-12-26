@@ -277,6 +277,15 @@ android.util.Log常用的方法有以下5个：
 new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 ```
 
+
+### 安卓打包与发布
+
+在这里选择打包和签名安装包
+![[Pasted image 20241226220148.png]]
+
+签名可以标识开发者，防止篡改
+
+
 ---
 
 
@@ -5490,3 +5499,14 @@ public class MainActivity extends AppCompatActivity {
 
 
 *待续*
+
+---
+---
+
+# 安卓逆向
+
+使用apktool解包
+
+使用jd(jdgui)、cfr、Procyon(其Gui分支为Luyten)进行java逆向
+
+https://github.com/deathmarine/Luyten
